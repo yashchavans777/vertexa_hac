@@ -59,6 +59,7 @@ const auditLedgerSchema = new mongoose.Schema(
     decisionPath: {
       type: String,
       required: [true, 'Decision path is required'],
+      default: 'Action intercepted by REQUIRE_APPROVAL policy',
       trim: true
     },
     decisionReason: {

@@ -47,7 +47,7 @@ async function appendBlock(blockData, retryCount = 0) {
     const nonce = blockData.nonce || 0;
     const resolvedDecisionPath =
       blockData.decisionPath ||
-      `Matched ${blockData.finalDecision || 'REQUIRE_APPROVAL'} policy for ${blockData.toolName || 'tool'}`;
+      'Action intercepted by REQUIRE_APPROVAL policy';
 
     // 2. Deterministically compute currentHash over block properties
     const currentHash = calculateBlockHash({

@@ -13,6 +13,7 @@ import {
   Code,
   Layers,
   Terminal,
+  Zap,
 } from 'lucide-react';
 import SimulateActionFab from './SimulateActionFab';
 
@@ -89,6 +90,7 @@ export default function PolicyManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [actionFeedback, setActionFeedback] = useState(null);
+  const [isSimulateOpen, setIsSimulateOpen] = useState(false);
 
   // Form State
   const [formName, setFormName] = useState('');
@@ -249,7 +251,18 @@ export default function PolicyManager() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Top-Right Prominent Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsSimulateOpen((prev) => !prev)}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:brightness-110 text-slate-950 shadow-[0_0_18px_rgba(245,158,11,0.5)] border border-amber-200/60 transition-all cursor-pointer active:scale-95"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />
+            <Zap size={13} className="fill-slate-950 text-slate-950" />
+            <span>SIMULATE AI ACTION</span>
+          </button>
+
           <button
             onClick={fetchPolicies}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-[rgba(0,245,255,0.06)] hover:bg-[rgba(0,245,255,0.12)] border border-[rgba(0,245,255,0.2)] text-[#00F5FF] transition-all cursor-pointer"
@@ -608,7 +621,11 @@ export default function PolicyManager() {
       </div>
 
       {/* ── Simulate AI Action Floating Action Button (FAB) ───── */}
-      <SimulateActionFab policies={policies} />
+      <SimulateActionFab
+        policies={policies}
+        isOpen={isSimulateOpen}
+        onToggle={setIsSimulateOpen}
+      />
     </div>
   );
 }

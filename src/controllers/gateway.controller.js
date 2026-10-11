@@ -103,8 +103,10 @@ const evaluateAction = asyncHandler(async (req, res) => {
   );
 
   const effect = policyOutcome?.effect || 'REQUIRE_APPROVAL';
-  const decisionReason = policyOutcome?.decisionReason || `Policy evaluated with effect ${effect} for tool ${toolName}.`;
-  const decisionPath = policyOutcome?.decisionPath || `Matched ${effect} policy for ${toolName}`;
+  const decisionReason = policyOutcome?.decisionReason || `Action intercepted by ${effect} policy`;
+  const decisionPath =
+    policyOutcome?.decisionPath ||
+    `Action intercepted by ${effect} policy`;
 
   // Map policy engine effect to ledger finalDecision enum
   let finalDecision = 'BLOCKED';
@@ -121,8 +123,8 @@ const evaluateAction = asyncHandler(async (req, res) => {
     toolName,
     payload,
     finalDecision,
-    decisionPath,
-    decisionReason,
+    decisionPath: decisionPath || 'Action intercepted by REQUIRE_APPROVAL policy',
+    decisionReason: decisionReason || 'Action intercepted by REQUIRE_APPROVAL policy',
     timestamp: new Date()
   });
 

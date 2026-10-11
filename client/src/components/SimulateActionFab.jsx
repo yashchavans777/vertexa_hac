@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap,
@@ -21,8 +21,21 @@ import api from '../services/api';
  * Floating Action Button & Simulation Panel for demonstrating AI Gateway
  * policy interception of REQUIRE_APPROVAL tool calls during live judge demonstrations.
  */
-export default function SimulateActionFab({ policies = [], onActionIntercepted }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function SimulateActionFab({
+  policies = [],
+  isOpen: externalIsOpen,
+  onToggle,
+  onActionIntercepted
+}) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
+  const setIsOpen = (val) => {
+    const nextVal = typeof val === 'function' ? val(isOpen) : val;
+    if (onToggle) onToggle(nextVal);
+    setInternalIsOpen(nextVal);
+  };
+
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState(null);
   const [toastAlert, setToastAlert] = useState(null);
@@ -40,7 +53,7 @@ export default function SimulateActionFab({ policies = [], onActionIntercepted }
   const [agentId, setAgentId] = useState('agent_devops_v1');
 
   // Keep selectedTool synchronized if policies change
-  React.useEffect(() => {
+  useEffect(() => {
     if (availableTools.length > 0 && !availableTools.includes(selectedTool)) {
       setSelectedTool(availableTools[0]);
     }
@@ -187,8 +200,9 @@ export default function SimulateActionFab({ policies = [], onActionIntercepted }
         )}
       </AnimatePresence>
 
-      {/* ── Floating Action Button (FAB) & Expandable Panel ──────── */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 font-mono">
+      {/* ── Elevated Floating Action Button (FAB) & Expandable Panel ── */}
+      {/* Sits elevated well above any footer (bottom-28 / bottom-32) */}
+      <div className="fixed bottom-28 right-8 z-40 flex flex-col items-end gap-3 font-mono md:bottom-28">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -196,7 +210,7 @@ export default function SimulateActionFab({ policies = [], onActionIntercepted }
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-96 rounded-2xl border border-amber-500/40 bg-[#0C101A]/95 backdrop-blur-2xl p-5 shadow-[0_0_50px_rgba(0,0,0,0.8),0_0_25px_rgba(245,158,11,0.2)] flex flex-col gap-4 text-xs"
+              className="w-96 max-h-[80vh] overflow-y-auto rounded-2xl border border-amber-500/40 bg-[#0C101A]/95 backdrop-blur-2xl p-5 shadow-[0_0_50px_rgba(0,0,0,0.8),0_0_25px_rgba(245,158,11,0.2)] flex flex-col gap-4 text-xs"
             >
               {/* Panel Header */}
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -300,7 +314,7 @@ export default function SimulateActionFab({ policies = [], onActionIntercepted }
           )}
         </AnimatePresence>
 
-        {/* ── The Floating Action Button (FAB) ────────────────────── */}
+        {/* ── Large Floating Action Button ──────────────────────── */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
