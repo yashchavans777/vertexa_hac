@@ -73,7 +73,28 @@ function AwaitingPlaceholder({ viewId }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('queue');
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const getActiveView = (tab) => {
+    switch (tab) {
+      case 'overview':
+      case 'analytics':
+        return <ExecutiveAnalytics onNavigate={setActiveTab} />;
+      case 'queue':
+      case 'approvals':
+      case 'agents':
+        return <LiveQueue />;
+      case 'policies':
+        return <PolicyManager />;
+      case 'ledger':
+        return <CryptographicLedger />;
+      case 'chaos':
+      case 'adversarial':
+        return <ChaosLab />;
+      default:
+        return <AwaitingPlaceholder viewId={tab} />;
+    }
+  };
 
   return (
     <CyberShell activeTab={activeTab} onTabChange={setActiveTab}>
@@ -88,7 +109,7 @@ export default function App() {
           transition={{ duration: 0.28, ease: 'easeOut' }}
           className="w-full"
         >
-          {VIEWS[activeTab] ?? <AwaitingPlaceholder viewId={activeTab} />}
+          {getActiveView(activeTab)}
         </motion.div>
       </AnimatePresence>
     </CyberShell>

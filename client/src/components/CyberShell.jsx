@@ -1,316 +1,249 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Activity,
-  BookLock,
-  ShieldCheck,
-  Swords,
-  Cpu,
-  Wifi,
-  Clock,
-  ChevronRight,
-  BarChart2,
+  LayoutDashboard,
   Zap,
+  ShieldAlert,
+  Bot,
+  Sliders,
+  Lock,
+  Search,
+  Bell,
+  Settings,
+  Shield,
+  CheckCircle2,
+  ChevronRight,
+  ExternalLink,
 } from 'lucide-react';
+import CosmicThreatBackground from './CosmicThreatBackground';
 
-/* ── Navigation items ─────────────────────────────────────────── */
+/* ── Navigation items matching Image 2 ─────────────────────────── */
 const NAV_ITEMS = [
-  { id: 'queue',      label: 'Live Queue',             icon: Activity,    accent: '#00F5FF' },
-  { id: 'ledger',     label: 'Cryptographic Ledger',   icon: BookLock,    accent: '#00E676' },
-  { id: 'policies',   label: 'Policy Engine',          icon: ShieldCheck, accent: '#FFB800' },
-  { id: 'analytics',  label: 'Threat Analytics',       icon: BarChart2,   accent: '#00F5FF' },
-  { id: 'chaos',      label: 'Chaos Lab',              icon: Zap,         accent: '#F01616' },
+  { id: 'overview',  label: 'Overview',        icon: LayoutDashboard },
+  { id: 'queue',     label: 'Live Actions',    icon: Zap },
+  { id: 'approvals', label: 'Approval Queue',  icon: ShieldAlert, badge: 23, badgeColor: '#FF4D4D' },
+  { id: 'agents',    label: 'Agents',          icon: Bot, badge: 6, badgeColor: '#1E2538' },
+  { id: 'policies',  label: 'Policies',        icon: Sliders },
+  { id: 'ledger',    label: 'Audit Trail',     icon: Lock },
 ];
 
-/* ── Real-time digital clock ──────────────────────────────────── */
-function DigitalClock() {
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const id = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  const pad = (n) => String(n).padStart(2, '0');
-  return (
-    <span className="font-mono text-xs tracking-widest" style={{ color: 'var(--accent-cyan)' }}>
-      {pad(time.getHours())}:{pad(time.getMinutes())}:{pad(time.getSeconds())}
-      <span className="ml-1 text-[10px]" style={{ color: 'var(--text-secondary)' }}>
-        {Intl.DateTimeFormat('en', { timeZoneName: 'short' }).format(time).split(' ').pop()}
-      </span>
-    </span>
-  );
-}
-
-/* ── Sidebar NavItem ──────────────────────────────────────────── */
-function NavItem({ item, active, onClick }) {
+/* ── Sidebar NavItem Component ────────────────────────────────── */
+function SidebarNavItem({ item, active, onClick }) {
   const Icon = item.icon;
   const isActive = active === item.id;
 
   return (
-    <motion.button
+    <button
       onClick={() => onClick(item.id)}
-      whileHover={{ x: 4 }}
-      whileTap={{ scale: 0.97 }}
       className={`
-        group relative w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left
-        transition-all duration-200 cursor-pointer border border-transparent
-        ${isActive ? 'nav-item-active' : ''}
+        group relative w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left
+        transition-all duration-150 cursor-pointer font-medium text-xs select-none
+        ${isActive
+          ? 'bg-[#181D2A] text-white font-semibold shadow-inner'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-[#131722]/80'
+        }
       `}
-      style={{
-        color: isActive ? item.accent : 'var(--text-secondary)',
-        borderColor: isActive ? `${item.accent}22` : 'transparent',
-        background: isActive ? `${item.accent}10` : 'transparent',
-      }}
     >
-      {/* Active left border glow */}
+      {/* Active Left Indicator */}
       {isActive && (
-        <motion.span
-          layoutId="nav-indicator"
-          className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r-full"
-          style={{ background: item.accent, boxShadow: `0 0 8px ${item.accent}` }}
+        <span
+          className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full"
+          style={{
+            background: '#EF233C',
+            boxShadow: '0 0 10px #EF233C',
+          }}
         />
       )}
 
       <Icon
-        size={16}
-        className="shrink-0 transition-all duration-200"
-        style={{ color: isActive ? item.accent : 'var(--text-secondary)' }}
+        size={17}
+        className={`shrink-0 transition-colors ${
+          isActive ? 'text-[#EF233C]' : 'text-slate-400 group-hover:text-slate-200'
+        }`}
       />
 
-      <span className="text-xs font-medium tracking-wider uppercase truncate">
-        {item.label}
-      </span>
+      <span className="truncate flex-1 tracking-wide">{item.label}</span>
 
-      {isActive && (
-        <ChevronRight size={12} className="ml-auto shrink-0" style={{ color: item.accent }} />
-      )}
-    </motion.button>
-  );
-}
-
-/* ── Top Header ───────────────────────────────────────────────── */
-function TopHeader({ connectedAgents }) {
-  return (
-    <header
-      className="glass-panel h-14 flex items-center justify-between px-6 shrink-0 rounded-none"
-      style={{
-        borderLeft: 'none',
-        borderRight: 'none',
-        borderTop: 'none',
-        borderRadius: 0,
-        borderBottom: '1px solid var(--border-subtle)',
-      }}
-    >
-      {/* Left: brand */}
-      <div className="flex items-center gap-3">
-        <div
-          className="flex items-center justify-center w-7 h-7 rounded"
-          style={{ background: 'var(--accent-cyan-dim)', border: '1px solid var(--border-active)' }}
+      {/* Pill Badge (e.g. 23, 6) */}
+      {item.badge !== undefined && (
+        <span
+          className="px-2 py-0.5 rounded-full text-[11px] font-bold font-mono shrink-0"
+          style={{
+            backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.2)' : '#192030',
+            color: item.badgeColor === '#FF4D4D' ? '#FF5C6E' : '#94A3B8',
+            border: item.badgeColor === '#FF4D4D' ? '1px solid rgba(239, 35, 60, 0.4)' : '1px solid #28334A',
+          }}
         >
-          <Cpu size={14} style={{ color: 'var(--accent-cyan)' }} />
-        </div>
-        <div>
-          <span className="text-sm font-bold tracking-[0.2em] uppercase glow-cyan-text"
-            style={{ color: 'var(--accent-cyan)' }}>
-            ActionGate
-          </span>
-          <span className="ml-2 text-[10px] tracking-widest uppercase"
-            style={{ color: 'var(--text-dim)' }}>
-            v1.0 — AI Authorization Engine
-          </span>
-        </div>
-      </div>
-
-      {/* Right: status indicators */}
-      <div className="flex items-center gap-6">
-        {/* System Online */}
-        <div className="flex items-center gap-2">
-          <span
-            className="w-2 h-2 rounded-full pulse-online"
-            style={{ background: 'var(--accent-emerald)' }}
-          />
-          <span className="text-xs font-medium tracking-widest uppercase glow-emerald-text"
-            style={{ color: 'var(--accent-emerald)' }}>
-            System Online
-          </span>
-        </div>
-
-        {/* Divider */}
-        <div className="h-5 w-px" style={{ background: 'var(--border-subtle)' }} />
-
-        {/* Connected Agents */}
-        <div className="flex items-center gap-2">
-          <Wifi size={13} style={{ color: 'var(--text-secondary)' }} />
-          <span className="text-[11px] tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-            Agents:
-          </span>
-          <motion.span
-            key={connectedAgents}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-xs font-bold"
-            style={{ color: 'var(--accent-cyan)' }}
-          >
-            {connectedAgents}
-          </motion.span>
-        </div>
-
-        {/* Divider */}
-        <div className="h-5 w-px" style={{ background: 'var(--border-subtle)' }} />
-
-        {/* Clock */}
-        <div className="flex items-center gap-2">
-          <Clock size={13} style={{ color: 'var(--text-secondary)' }} />
-          <DigitalClock />
-        </div>
-      </div>
-    </header>
+          {item.badge}
+        </span>
+      )}
+    </button>
   );
 }
 
-/* ── Sidebar ──────────────────────────────────────────────────── */
-function Sidebar({ activeView, onNavigate }) {
-  return (
-    <aside
-      className="glass-panel flex flex-col shrink-0 rounded-none"
-      style={{
-        width: '220px',
-        borderTop: 'none',
-        borderBottom: 'none',
-        borderLeft: 'none',
-        borderRadius: 0,
-        borderRight: '1px solid var(--border-subtle)',
-      }}
-    >
-      {/* Sidebar brand section */}
-      <div className="px-4 py-5 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-        <p className="text-[9px] tracking-[0.3em] uppercase font-medium"
-          style={{ color: 'var(--text-dim)' }}>
-          Navigation
-        </p>
-      </div>
-
-      {/* Nav items */}
-      <nav className="flex flex-col gap-1 p-3 flex-1">
-        {NAV_ITEMS.map((item) => (
-          <NavItem
-            key={item.id}
-            item={item}
-            active={activeView}
-            onClick={onNavigate}
-          />
-        ))}
-      </nav>
-
-      {/* Footer */}
-      <div
-        className="px-4 py-4 border-t"
-        style={{ borderColor: 'var(--border-subtle)' }}
-      >
-        <div className="flex items-center gap-2">
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: 'var(--accent-emerald)', boxShadow: '0 0 6px var(--accent-emerald)' }}
-          />
-          <span className="text-[9px] tracking-[0.25em] uppercase" style={{ color: 'var(--text-dim)' }}>
-            Gateway Active
-          </span>
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-/* ── Shell mount animation variants ──────────────────────────── */
-const shellVariants = {
-  hidden:  { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.5, ease: 'easeOut', staggerChildren: 0.08 },
-  },
-};
-
-const panelVariants = {
-  hidden:  { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
-};
-
-/* ── CyberShell ───────────────────────────────────────────────── */
-export default function CyberShell({ children, activeTab, onTabChange }) {
-  const [internalActiveView, setInternalActiveView] = useState('queue');
-  const activeView = activeTab !== undefined ? activeTab : internalActiveView;
-  const setActiveView = onTabChange || setInternalActiveView;
-  // Mock fluctuating agent count
-  const [connectedAgents, setConnectedAgents] = useState(7);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setConnectedAgents((n) => Math.max(1, n + Math.floor(Math.random() * 3) - 1));
-    }, 4000);
-    return () => clearInterval(id);
-  }, []);
+export default function CyberShell({ children, activeTab = 'overview', onTabChange }) {
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <>
-      {/* CRT Scanline overlay — purely decorative */}
-      <div className="crt-overlay" aria-hidden="true" />
+    <div className="relative min-h-screen w-full bg-[#080A10] text-slate-100 font-sans flex flex-col overflow-hidden selection:bg-[#EF233C]/30 selection:text-white">
+      {/* Cosmic threat backdrop with neon red lasers, starfield & orbital torus */}
+      <CosmicThreatBackground />
 
-      {/* Root shell */}
-      <motion.div
-        variants={shellVariants}
-        initial="hidden"
-        animate="visible"
-        className="cyber-grid-bg flex flex-col"
-        style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}
-      >
-        {/* Top Header */}
-        <motion.div variants={panelVariants}>
-          <TopHeader connectedAgents={connectedAgents} />
-        </motion.div>
-
-        {/* Body: sidebar + main */}
-        <div className="flex flex-1 overflow-hidden">
-          {/* Left Sidebar */}
-          <motion.div variants={panelVariants}>
-            <Sidebar activeView={activeView} onNavigate={setActiveView} />
-          </motion.div>
-
-          {/* Main Content Area */}
-          <motion.main
-            variants={panelVariants}
-            className="flex-1 overflow-y-auto p-6"
-            style={{ background: 'transparent' }}
-          >
-            {/* View label breadcrumb */}
-            <div className="flex items-center gap-2 mb-6">
-              <span className="text-[9px] tracking-[0.3em] uppercase"
-                style={{ color: 'var(--text-dim)' }}>
+      <div className="relative z-10 flex flex-1 h-screen overflow-hidden">
+        {/* ── Left Sidebar (verbatim Image 2) ────────────────────────── */}
+        <aside className="w-64 shrink-0 flex flex-col border-r border-slate-800/80 bg-[#0A0D15]/90 backdrop-blur-xl z-20">
+          {/* Logo Header */}
+          <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF2D37] to-[#B80C19] shadow-[0_0_15px_rgba(239,35,60,0.5)]">
+                {/* Shield with 4-point star */}
+                <Shield size={18} className="text-white fill-white/20" />
+                <span className="absolute text-[10px] text-white font-black leading-none">✦</span>
+              </div>
+              <span className="text-base font-extrabold tracking-tight text-white">
                 ActionGate
-              </span>
-              <span style={{ color: 'var(--text-dim)', fontSize: 10 }}>/</span>
-              <span className="text-[9px] tracking-[0.3em] uppercase"
-                style={{ color: 'var(--accent-cyan)' }}>
-                {NAV_ITEMS.find(i => i.id === activeView)?.label || activeView}
               </span>
             </div>
 
-            {/* Scrollable glass content container */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeView}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.28, ease: 'easeOut' }}
-                className="glass-panel min-h-[calc(100vh-10rem)] p-6"
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#201014] text-[#FF4D5A] border border-[#EF233C]/30">
+              v1.0.0-PROD
+            </span>
+          </div>
+
+          {/* Navigation Items */}
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            {NAV_ITEMS.map((item) => (
+              <SidebarNavItem
+                key={item.id}
+                item={item}
+                active={activeTab}
+                onClick={onTabChange}
+              />
+            ))}
+          </nav>
+
+          {/* Bottom Status Box */}
+          <div className="px-3 pb-3">
+            <div className="p-3 rounded-xl bg-[#0F131D]/90 border border-slate-800/80 shadow-inner flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
+                <span className="text-xs font-bold text-white tracking-wide">
+                  Gateway Active
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                All agent actions protected
+              </p>
+            </div>
+          </div>
+
+          {/* User Profile Card */}
+          <div className="px-4 py-3 border-t border-slate-800/80 flex items-center justify-between bg-[#0A0D15]">
+            <div className="flex items-center gap-3">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                alt="Elena Vance"
+                className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-white leading-tight">
+                  Elena Vance
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono leading-tight">
+                  Lead SecOps / NetSec
+                </span>
+              </div>
+            </div>
+
+            <button
+              title="Settings"
+              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
+            >
+              <Settings size={15} />
+            </button>
+          </div>
+        </aside>
+
+        {/* ── Main Content Area ────────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col h-screen overflow-hidden">
+          {/* Top Header Bar */}
+          <header className="h-16 shrink-0 px-8 border-b border-slate-800/80 bg-[#0A0D15]/75 backdrop-blur-md flex items-center justify-between z-20">
+            {/* Left: View Title & Subtitle */}
+            <div className="flex flex-col">
+              <h2 className="text-base font-extrabold text-white tracking-tight leading-tight">
+                Security Overview
+              </h2>
+              <p className="text-xs text-slate-400">
+                Monitor and authorize autonomous AI actions in real time.
+              </p>
+            </div>
+
+            {/* Right: Search, Status, Notification, Avatar */}
+            <div className="flex items-center gap-4">
+              {/* Search Bar with ⌘K */}
+              <div className="relative flex items-center">
+                <Search size={14} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search actions, agents, policies..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-72 pl-9 pr-11 py-1.5 rounded-xl text-xs bg-[#111624]/90 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#EF233C]/50 transition-all font-sans"
+                />
+                <kbd className="absolute right-3 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-800/80 border border-slate-700/60">
+                  ⌘K
+                </kbd>
+              </div>
+
+              {/* Gateway Online status pill */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0E1522] border border-slate-800 text-xs font-mono font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
+                <span className="text-slate-300 text-[11px]">
+                  Gateway Online - 99.99%
+                </span>
+              </div>
+
+              {/* Notification Bell */}
+              <button
+                className="relative p-2 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
+                title="Notifications"
               >
-                {typeof children === 'function' ? children(activeView) : children}
-              </motion.div>
-            </AnimatePresence>
-          </motion.main>
+                <Bell size={15} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EF233C] ring-2 ring-[#0A0D15]" />
+              </button>
+
+              {/* Top User Avatar */}
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                alt="Elena Vance"
+                className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800 cursor-pointer"
+              />
+            </div>
+          </header>
+
+          {/* Main Content Body */}
+          <main className="flex-1 overflow-y-auto px-8 py-6 relative z-10 scrollbar-thin scrollbar-thumb-slate-800">
+            {children}
+          </main>
+
+          {/* Bottom Status Footer */}
+          <footer className="h-8 shrink-0 px-8 border-t border-slate-800/80 bg-[#090C12]/95 backdrop-blur-md flex items-center justify-between text-[11px] font-mono text-slate-400 z-20">
+            <div className="flex items-center gap-2 font-semibold text-slate-300">
+              <Shield size={12} className="text-[#EF233C]" />
+              <span>ActionGate Security Layer</span>
+            </div>
+
+            <div className="flex items-center gap-2 text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>Gateway Active · 6 Agents Connected · Audit Chain Verified (SHA-256)</span>
+            </div>
+
+            <div className="text-slate-500 font-mono">
+              Engine v1.0.0 · 42ms p99 latency
+            </div>
+          </footer>
         </div>
-      </motion.div>
-    </>
+      </div>
+    </div>
   );
 }
