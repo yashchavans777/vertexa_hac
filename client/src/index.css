@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/* ─── Root Design Tokens ─────────────────────────────────────── */
+:root {
+  --bg-obsidian:      #0B0F19;
+  --bg-surface:       #0F1623;
+  --bg-glass:         rgba(15, 22, 35, 0.75);
+  --bg-glass-hover:   rgba(15, 22, 35, 0.90);
+
+  --accent-cyan:      #00F5FF;
+  --accent-cyan-dim:  rgba(0, 245, 255, 0.12);
+  --accent-cyan-glow: rgba(0, 245, 255, 0.35);
+
+  --accent-crimson:   #FF2D55;
+  --accent-amber:     #FFB800;
+  --accent-emerald:   #00E676;
+
+  --border-subtle:    rgba(0, 245, 255, 0.10);
+  --border-active:    rgba(0, 245, 255, 0.35);
+
+  --text-primary:     #E2E8F0;
+  --text-secondary:   #64748B;
+  --text-dim:         #334155;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-obsidian);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Cybernetic Grid Background ────────────────────────────── */
+.cyber-grid-bg {
+  background-color: var(--bg-obsidian);
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* ─── CRT Scanline Overlay ───────────────────────────────────── */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  animation: crt-flicker 8s infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 97%, 100% { opacity: 1; }
+  98%           { opacity: 0.92; }
+  99%           { opacity: 1; }
+}
+
+/* ─── Glassmorphism Panel ────────────────────────────────────── */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+.glass-panel-hover:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-active);
+  transition: all 0.2s ease;
+}
+
+/* ─── Neon Glow Utilities ────────────────────────────────────── */
+.glow-cyan {
+  box-shadow: 0 0 12px var(--accent-cyan-glow), 0 0 24px rgba(0, 245, 255, 0.12);
+}
+
+.glow-cyan-text {
+  text-shadow: 0 0 8px var(--accent-cyan), 0 0 20px var(--accent-cyan-glow);
+}
+
+.glow-emerald-text {
+  text-shadow: 0 0 8px var(--accent-emerald), 0 0 20px rgba(0, 230, 118, 0.4);
+}
+
+.glow-crimson-text {
+  text-shadow: 0 0 8px var(--accent-crimson), 0 0 20px rgba(255, 45, 85, 0.4);
+}
+
+.glow-amber-text {
+  text-shadow: 0 0 8px var(--accent-amber), 0 0 20px rgba(255, 184, 0, 0.4);
+}
+
+/* ─── Status Pill Badges ─────────────────────────────────────── */
+.badge-allowed {
+  background: rgba(0, 230, 118, 0.12);
+  border: 1px solid rgba(0, 230, 118, 0.35);
+  color: var(--accent-emerald);
+}
+
+.badge-blocked {
+  background: rgba(255, 45, 85, 0.12);
+  border: 1px solid rgba(255, 45, 85, 0.35);
+  color: var(--accent-crimson);
+}
+
+.badge-held {
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  color: var(--accent-amber);
+}
+
+.badge-pending {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  color: var(--accent-cyan);
+}
+
+/* ─── Nav Item Active State ──────────────────────────────────── */
+.nav-item-active {
+  background: var(--accent-cyan-dim);
+  border-right: 2px solid var(--accent-cyan);
+  color: var(--accent-cyan) !important;
+}
+
+/* ─── Scrollbar Styling ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 245, 255, 0.20);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 245, 255, 0.40);
+}
+
+/* ─── Pulsing Online Dot ─────────────────────────────────────── */
+@keyframes pulse-online {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent-emerald); }
+  50%       { opacity: 0.6; box-shadow: 0 0 14px var(--accent-emerald); }
+}
+.pulse-online {
+  animation: pulse-online 2s ease-in-out infinite;
+}
+
+/* ─── Awaiting Pulse ─────────────────────────────────────────── */
+@keyframes awaiting-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+.awaiting-pulse {
+  animation: awaiting-pulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Sweep border animation ─────────────────────────────────── */
+@keyframes border-sweep {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
