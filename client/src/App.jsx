@@ -1,12 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import CyberShell from './components/CyberShell';
 import ExecutiveAnalytics from './components/ExecutiveAnalytics';
+import PolicyManager from './components/PolicyManager';
 
-/* ─── View registry ──────────────────────────────────────────── */
-// Maps nav IDs from CyberShell to their rendered components.
-// Additional views (LiveQueue, Ledger, etc.) will be registered here in later steps.
+/* ─── View Registry ──────────────────────────────────────────── */
+// Maps nav IDs from CyberShell to their rendered views.
 const VIEWS = {
   analytics: <ExecutiveAnalytics />,
+  policies: <PolicyManager />,
 };
 
 /* ─── Awaiting Placeholder (default for unbuilt views) ──────── */
