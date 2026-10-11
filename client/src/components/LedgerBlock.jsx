@@ -61,7 +61,7 @@ export const LedgerBlock = ({ block, isLast = false, isTamperedBlock = false }) 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        className={`relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/70 backdrop-blur-xl border-l-[6px] ${status.borderLeft} transition-all duration-300 hover:border-slate-700/80 hover:bg-slate-900/90 ${
+        className={`relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/70 backdrop-blur-xl border-l-[6px] ${status.borderLeft} transition-all duration-300 hover:border-slate-700/80 hover:bg-slate-900/90 hover-card-scale ${
           isTamperedBlock ? 'ring-2 ring-[#F01616] shadow-[0_0_30px_rgba(240,22,22,0.45)]' : ''
         }`}
       >

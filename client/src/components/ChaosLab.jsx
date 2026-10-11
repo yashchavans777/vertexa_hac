@@ -314,7 +314,7 @@ export default function ChaosLab() {
                 whileTap={{ scale: 0.98 }}
                 disabled={activeAttack !== null}
                 onClick={launchSqlInjection}
-                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50"
+                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50 hover-card-scale"
                 style={{
                   background: 'rgba(240, 22, 22, 0.08)',
                   borderColor: C_CHAOS_RED,
@@ -355,7 +355,7 @@ export default function ChaosLab() {
                 whileTap={{ scale: 0.98 }}
                 disabled={activeAttack !== null}
                 onClick={launchPromptInjection}
-                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50"
+                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50 hover-card-scale"
                 style={{
                   background: 'rgba(240, 22, 22, 0.08)',
                   borderColor: C_CHAOS_RED,
@@ -396,7 +396,7 @@ export default function ChaosLab() {
                 whileTap={{ scale: 0.98 }}
                 disabled={activeAttack !== null}
                 onClick={launchReplayAttack}
-                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50"
+                className="w-full p-4 rounded-lg flex items-center justify-between text-left transition-all border cursor-pointer disabled:opacity-50 hover-card-scale"
                 style={{
                   background: 'rgba(240, 22, 22, 0.08)',
                   borderColor: C_CHAOS_RED,
@@ -537,7 +537,7 @@ export default function ChaosLab() {
       {/* ── Bottom Row: Database Tamper Test ───────────────────────── */}
       <motion.div
         whileHover={{ scale: 1.005 }}
-        className="glass-panel p-5 rounded-xl border flex flex-col md:flex-row items-center justify-between gap-4"
+        className="glass-panel p-5 rounded-xl border flex flex-col md:flex-row items-center justify-between gap-4 hover-card-scale"
         style={{
           background: C_BG_CARD,
           borderColor: C_CHAOS_RED,
@@ -624,7 +624,7 @@ export default function ChaosLab() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
-                    className="p-3 rounded-lg text-xs font-mono flex items-start justify-between gap-4 border"
+                    className="p-3 rounded-lg text-xs font-mono flex items-start justify-between gap-4 border hover-card-scale"
                     style={{
                       background: 'rgba(15, 22, 35, 0.6)',
                       borderColor: isIntercept ? 'rgba(240, 22, 22, 0.3)' : 'rgba(0, 245, 255, 0.15)',

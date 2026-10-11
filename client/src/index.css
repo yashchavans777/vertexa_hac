@@ -183,3 +183,107 @@ body {
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* ─── Universal Smooth Hover Scale-Up Effect ─────────────────── */
+.hover-card-scale,
+.glass-panel,
+.glass-panel-hover,
+[data-hover-card="true"] {
+  will-change: transform, box-shadow;
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out, border-color 0.25s ease-in-out, background-color 0.25s ease-in-out;
+}
+
+.hover-card-scale:hover,
+.glass-panel-hover:hover,
+[data-hover-card="true"]:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 0 24px -2px rgba(0, 245, 255, 0.22);
+}
+
+/* ─── Streaming SVG Data Path Animations ─────────────────────── */
+@keyframes stream-flow {
+  0% {
+    stroke-dashoffset: 40;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.anim-stream-line {
+  stroke-dasharray: 8 6;
+  animation: stream-flow 1.2s linear infinite;
+}
+
+.anim-stream-line-fast {
+  stroke-dasharray: 6 5;
+  animation: stream-flow 0.85s linear infinite;
+}
+
+/* ─── Running Light Border Beam (Red / Green Glow Cycling) ────── */
+@keyframes running-beam-rotate {
+  0% {
+    --beam-angle: 0deg;
+  }
+  100% {
+    --beam-angle: 360deg;
+  }
+}
+
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.topology-beam-card {
+  position: relative;
+  border-radius: 1rem;
+}
+
+.topology-beam-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg,
+    transparent 45deg,
+    #10B981 100deg,
+    #34D399 135deg,
+    transparent 180deg,
+    transparent 225deg,
+    #EF233C 280deg,
+    #FF4D5A 320deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: running-beam-rotate 4s linear infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Fallback for browsers not supporting @property */
+@keyframes running-border-glow {
+  0% {
+    border-color: rgba(239, 35, 60, 0.7);
+    box-shadow: 0 0 25px rgba(239, 35, 60, 0.3), inset 0 0 15px rgba(239, 35, 60, 0.1);
+  }
+  50% {
+    border-color: rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3), inset 0 0 15px rgba(16, 185, 129, 0.1);
+  }
+  100% {
+    border-color: rgba(239, 35, 60, 0.7);
+    box-shadow: 0 0 25px rgba(239, 35, 60, 0.3), inset 0 0 15px rgba(239, 35, 60, 0.1);
+  }
+}
+
+.topology-border-glow {
+  animation: running-border-glow 4s ease-in-out infinite;
+}

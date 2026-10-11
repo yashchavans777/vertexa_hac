@@ -555,22 +555,22 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="rounded-2xl border border-slate-800/90 bg-[#0C101A]/90 backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden"
+            className="topology-beam-card topology-border-glow rounded-2xl border border-slate-800/90 bg-[#0C101A]/95 backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden hover-card-scale"
             style={{
               boxShadow: '0 20px 45px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)',
             }}
           >
-            {/* Top Red Glow Accent Strip */}
+            {/* Top Red-to-Green Glow Accent Strip */}
             <div
-              className="absolute top-0 left-0 right-0 h-[2px]"
+              className="absolute top-0 left-0 right-0 h-[2px] z-20"
               style={{
-                background: 'linear-gradient(90deg, transparent 0%, #EF233C 30%, #FF3848 70%, transparent 100%)',
-                boxShadow: '0 0 18px #EF233C',
+                background: 'linear-gradient(90deg, #10B981 0%, #EF233C 50%, #10B981 100%)',
+                boxShadow: '0 0 18px rgba(239, 35, 60, 0.6)',
               }}
             />
 
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 font-mono">
+            <div className="relative z-10 flex items-center justify-between border-b border-slate-800/80 pb-3 font-mono">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#EF233C] animate-pulse shadow-[0_0_8px_#EF233C]" />
                 <h3 className="text-xs font-bold tracking-widest text-white uppercase">
@@ -582,8 +582,8 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               </span>
             </div>
 
-            {/* Interactive Animated Topology Mesh Diagram */}
-            <div className="relative h-64 rounded-xl bg-[#070A11] border border-slate-800/80 p-4 flex items-center justify-between overflow-hidden">
+            {/* Interactive Animated Topology Mesh Diagram with Clean Alignments & Flowing Lines */}
+            <div className="relative h-72 rounded-xl bg-[#070A11] border border-slate-800/80 px-6 py-4 flex items-center justify-between overflow-hidden">
               {/* Subtle background matrix grid */}
               <div
                 className="absolute inset-0 opacity-20 pointer-events-none"
@@ -593,94 +593,133 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                 }}
               />
 
-              {/* Node 1: Agent Source */}
-              <div className="relative z-10 flex flex-col items-center gap-1.5">
-                <div className="w-12 h-12 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-slate-300 shadow-lg">
-                  <Bot size={22} className="text-cyan-400" />
+              {/* Node 1: Agent Source (Cleanly Centered) */}
+              <div className="relative z-10 flex flex-col items-center justify-center text-center w-28 shrink-0 hover-card-scale">
+                <div className="w-13 h-13 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-slate-300 shadow-lg shadow-cyan-950/40">
+                  <Bot size={24} className="text-cyan-400" />
                 </div>
-                <span className="text-[11px] font-mono font-bold text-white">FinanceGPT</span>
-                <span className="text-[9px] font-mono text-[#EF233C] bg-[#EF233C]/10 px-1.5 py-0.5 rounded border border-[#EF233C]/30">
+                <span className="text-xs font-mono font-bold text-white mt-2.5 block tracking-tight">FinanceGPT</span>
+                <span className="text-[10px] font-mono font-semibold text-[#EF233C] bg-[#EF233C]/10 px-2 py-0.5 mt-1 rounded border border-[#EF233C]/30 inline-block">
                   Action Req
                 </span>
               </div>
 
-              {/* Connecting Dashed Laser to Gateway */}
-              <div className="relative flex-1 flex items-center justify-center px-2">
-                <svg className="w-full h-8 overflow-visible" preserveAspectRatio="none">
+              {/* Animated Running Connection Laser 1: FinanceGPT -> GATEWAY */}
+              <div className="relative flex-1 flex items-center justify-center px-1">
+                <svg className="w-full h-12 overflow-visible" preserveAspectRatio="none">
+                  {/* Background track line */}
                   <line
                     x1="0"
-                    y1="16"
+                    y1="24"
                     x2="100%"
-                    y2="16"
+                    y2="24"
+                    stroke="#EF233C"
+                    strokeOpacity="0.2"
+                    strokeWidth="3"
+                  />
+                  {/* Running dashed laser data line */}
+                  <line
+                    x1="0"
+                    y1="24"
+                    x2="100%"
+                    y2="24"
                     stroke="#EF233C"
                     strokeWidth="2.5"
-                    strokeDasharray="6 4"
-                    className="animate-pulse"
+                    className="anim-stream-line"
+                    style={{ filter: 'drop-shadow(0 0 6px #EF233C)' }}
                   />
                 </svg>
               </div>
 
-              {/* Node 2: Center Gateway Shield */}
-              <div className="relative z-10 flex flex-col items-center gap-1.5">
-                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_24px_rgba(239,35,60,0.6)]">
-                  <Shield size={26} className="fill-white/20" />
+              {/* Node 2: Center Gateway Shield (Cleanly Centered) */}
+              <div className="relative z-10 flex flex-col items-center justify-center text-center w-36 shrink-0 hover-card-scale">
+                <div className="relative w-15 h-15 rounded-2xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_26px_rgba(239,35,60,0.6)]">
+                  <Shield size={28} className="fill-white/20" />
                   <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 </div>
-                <span className="text-xs font-mono font-black text-white tracking-wider">GATEWAY</span>
-                <span className="text-[9px] font-mono text-slate-400">Zero-Trust Evaluator</span>
+                <span className="text-xs font-mono font-black text-white tracking-widest mt-2.5 block">GATEWAY</span>
+                <span className="text-[10px] font-mono text-slate-400 mt-0.5 block leading-tight">Zero-Trust Evaluator</span>
               </div>
 
-              {/* Connecting Routes Branching */}
-              <div className="relative flex-1 flex flex-col justify-between h-36 px-2">
+              {/* Animated Running Connection Laser 2: GATEWAY -> 3 Outputs Branching */}
+              <div className="relative flex-1 flex flex-col justify-center h-48 px-1">
                 <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                  {/* Path to Auto-Pass (Green) */}
                   <path
-                    d="M 0 72 C 30 72, 40 18, 100% 18"
+                    d="M 0 96 C 35 96, 45 28, 100% 28"
                     fill="none"
                     stroke="#10B981"
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
+                    strokeOpacity="0.2"
+                    strokeWidth="3"
                   />
                   <path
-                    d="M 0 72 C 30 72, 40 72, 100% 72"
+                    d="M 0 96 C 35 96, 45 28, 100% 28"
+                    fill="none"
+                    stroke="#10B981"
+                    strokeWidth="2.5"
+                    className="anim-stream-line-fast"
+                    style={{ filter: 'drop-shadow(0 0 6px #10B981)' }}
+                  />
+
+                  {/* Path to HITL Quarantine (Amber) */}
+                  <path
+                    d="M 0 96 C 35 96, 45 96, 100% 96"
+                    fill="none"
+                    stroke="#F59E0B"
+                    strokeOpacity="0.2"
+                    strokeWidth="3"
+                  />
+                  <path
+                    d="M 0 96 C 35 96, 45 96, 100% 96"
                     fill="none"
                     stroke="#F59E0B"
                     strokeWidth="2.5"
-                    strokeDasharray="5 3"
-                    className="animate-pulse"
+                    className="anim-stream-line"
+                    style={{ filter: 'drop-shadow(0 0 6px #F59E0B)' }}
                   />
+
+                  {/* Path to Blocked Exfil (Crimson Red) */}
                   <path
-                    d="M 0 72 C 30 72, 40 126, 100% 126"
+                    d="M 0 96 C 35 96, 45 164, 100% 164"
                     fill="none"
                     stroke="#EF233C"
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
+                    strokeOpacity="0.2"
+                    strokeWidth="3"
+                  />
+                  <path
+                    d="M 0 96 C 35 96, 45 164, 100% 164"
+                    fill="none"
+                    stroke="#EF233C"
+                    strokeWidth="2.5"
+                    className="anim-stream-line-fast"
+                    style={{ filter: 'drop-shadow(0 0 6px #EF233C)' }}
                   />
                 </svg>
               </div>
 
-              {/* Node 3: Enforcement Destination Outputs */}
-              <div className="relative z-10 flex flex-col justify-between h-36 py-1 font-mono text-[10px]">
-                <div className="flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/40 px-2 py-1 rounded text-emerald-400 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              {/* Node 3: Enforcement Destination Outputs (Vertically Distributed & Aligned) */}
+              <div className="relative z-10 flex flex-col justify-between h-48 py-1 font-mono text-[11px] shrink-0 w-36">
+                <div className="flex items-center justify-start gap-2 bg-emerald-950/50 border border-emerald-500/50 px-3 py-1.5 rounded-lg text-emerald-300 font-bold hover-card-scale shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]" />
                   <span>Auto-Pass</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-amber-950/40 border border-amber-500/40 px-2 py-1 rounded text-amber-400 font-bold shadow-[0_0_10px_rgba(245,158,11,0.3)]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <div className="flex items-center justify-start gap-2 bg-amber-950/50 border border-amber-500/50 px-3 py-1.5 rounded-lg text-amber-300 font-bold hover-card-scale shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#F59E0B]" />
                   <span>HITL Quarantine</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-rose-950/40 border border-rose-500/40 px-2 py-1 rounded text-rose-400 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <div className="flex items-center justify-start gap-2 bg-rose-950/50 border border-rose-500/50 px-3 py-1.5 rounded-lg text-rose-300 font-bold hover-card-scale shadow-[0_0_12px_rgba(239,35,60,0.3)]">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#EF233C]" />
                   <span>Blocked Exfil</span>
                 </div>
               </div>
             </div>
 
             {/* Bottom Card Footer */}
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
+            <div className="relative z-10 flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
               <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#10B981]" />
                 Deterministic HMAC Validated
               </span>
               <span className="text-slate-500">GATEWAY PORT: 5002</span>
@@ -694,7 +733,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               INTERCEPTED ACTIONS (24H)
@@ -726,7 +765,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 2 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               HUMAN PENDING QUEUE
@@ -758,7 +797,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 3 */}
-        <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(239,35,60,0.18)]">
+        <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(239,35,60,0.18)] hover-card-scale">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-[#FF4D5A] uppercase font-bold">
               ANOMALIES DEFLECTED
@@ -793,7 +832,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 4 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               CRYPTOGRAPHIC INTEGRITY
@@ -839,14 +878,16 @@ export default function ExecutiveAnalytics({ onNavigate }) {
 
           <div className="flex items-center gap-3">
             {/* Search Input */}
-            <div className="relative flex items-center">
-              <Search size={14} className="absolute left-3 text-slate-500" />
+            <div className="relative flex items-center w-56 sm:w-64 group">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+                <Search size={15} />
+              </div>
               <input
                 type="text"
                 placeholder="Filter tool calls, agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-56 sm:w-64 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-[#111624] border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#EF233C]/50 font-mono"
+                className="w-full h-9 pl-9 pr-3 text-xs bg-slate-900/80 backdrop-blur-md border border-slate-700/60 rounded-xl text-slate-200 placeholder-slate-400/80 hover:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 transition-all font-mono"
               />
             </div>
 
@@ -898,7 +939,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               return (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-slate-800/80 bg-[#080B12]/80 hover:bg-[#0D121F]/90 p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs"
+                  className="rounded-xl border border-slate-800/80 bg-[#080B12]/80 hover:bg-[#0D121F]/90 p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs hover-card-scale"
                 >
                   {/* Left: Agent & Action description */}
                   <div className="flex items-start md:items-center gap-3.5 flex-1 min-w-0">
@@ -1158,7 +1199,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           {/* Pillar 1 */}
-          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5">
+          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5 hover-card-scale">
             <div className="space-y-4">
               <div className="w-10 h-10 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-cyan-400">
                 <Bot size={20} />
@@ -1182,7 +1223,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 2: Featured Deterministic Gate */}
-          <div className="rounded-2xl border border-[#EF233C]/50 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] space-y-5">
+          <div className="rounded-2xl border border-[#EF233C]/50 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] space-y-5 hover-card-scale">
             <div className="space-y-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_15px_rgba(239,35,60,0.5)]">
                 <Shield size={20} className="fill-white/20" />
@@ -1206,7 +1247,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 3 */}
-          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5">
+          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5 hover-card-scale">
             <div className="space-y-4">
               <div className="w-10 h-10 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-emerald-400">
                 <Lock size={20} />
@@ -1238,7 +1279,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Module 1: Payload Mutation Defense */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6 hover-card-scale">
           <div className="space-y-2">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-[#FF4D5A]">
@@ -1319,7 +1360,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Module 2: Cryptographic Merkle Audit Chain */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6 hover-card-scale">
           <div className="space-y-2">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-slate-400">
@@ -1359,7 +1400,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               return (
                 <div
                   key={blk.index || idx}
-                  className={`p-3 rounded-xl border space-y-1.5 ${
+                  className={`p-3 rounded-xl border space-y-1.5 hover-card-scale ${
                     isHead
                       ? 'bg-[#14080B] border-[#EF233C]/40 shadow-[0_0_12px_rgba(239,35,60,0.2)]'
                       : 'bg-[#080B12] border-slate-800'

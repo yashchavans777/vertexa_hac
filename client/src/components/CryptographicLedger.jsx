@@ -134,7 +134,7 @@ export const CryptographicLedger = () => {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-xl hover-card-scale">
         <div className="flex items-center gap-3.5">
           <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30">
             <Lock className="w-6 h-6 text-purple-400" />

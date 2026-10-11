@@ -159,7 +159,7 @@ export const LiveQueue = () => {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md hover-card-scale">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Radio className="w-5 h-5 text-cyan-400" />

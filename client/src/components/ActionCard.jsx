@@ -93,7 +93,7 @@ export const ActionCard = ({ action, onDecision, isProcessing = false }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}
       transition={{ type: "spring", stiffness: 350, damping: 25 }}
-      className={`relative overflow-hidden rounded-2xl border bg-slate-900/60 backdrop-blur-xl transition-all duration-300 ${
+      className={`relative overflow-hidden rounded-2xl border bg-slate-900/60 backdrop-blur-xl transition-all duration-300 hover-card-scale ${
         isModified 
           ? 'border-cyan-500/40 shadow-[0_0_25px_rgba(6,182,212,0.15)]' 
           : 'border-slate-800/80 hover:border-slate-700/80 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]'

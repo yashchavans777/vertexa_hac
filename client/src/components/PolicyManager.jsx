@@ -450,7 +450,7 @@ export default function PolicyManager() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`glass-panel p-5 rounded-xl flex flex-col justify-between transition-all duration-300 relative ${
+              className={`glass-panel p-5 rounded-xl flex flex-col justify-between transition-all duration-300 relative hover-card-scale ${
                 !policy.isActive && !isBlockPolicy ? 'opacity-40' : ''
               }`}
               style={{

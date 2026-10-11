@@ -49,7 +49,7 @@ function SidebarNavItem({ item, active, onClick }) {
       onClick={() => onClick(item.id)}
       className={`
         group relative w-full min-w-0 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left
-        transition-all duration-150 cursor-pointer font-medium text-xs select-none overflow-hidden
+        transition-all duration-150 cursor-pointer font-medium text-xs select-none overflow-hidden hover-card-scale
         ${isActive
           ? 'bg-[#181D2A] text-white font-semibold shadow-inner'
           : 'text-slate-400 hover:text-slate-200 hover:bg-[#131722]/80'
@@ -76,10 +76,10 @@ function SidebarNavItem({ item, active, onClick }) {
 
       <span className="min-w-0 flex-1 truncate tracking-wide">{item.label}</span>
 
-      {/* Pill Badge (e.g. 23, 6) — fixed-size pill, inline at row end, always contained */}
+      {/* Pill Badge (e.g. 23, 6) — fixed-size pill, inline at row end, always safely contained */}
       {item.badge !== undefined && (
         <span
-          className="relative z-10 inline-flex items-center justify-center shrink-0 min-w-[24px] h-5 px-1.5 rounded-full text-[10px] leading-none font-bold font-mono tabular-nums"
+          className="ml-auto shrink-0 relative z-10 inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-[10px] leading-none font-bold font-mono tabular-nums select-none"
           style={{
             backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.2)' : '#192030',
             color: item.badgeColor === '#FF4D4D' ? '#FF5C6E' : '#94A3B8',
@@ -105,81 +105,94 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
 
       <div className="relative z-10 flex flex-1 h-screen overflow-hidden">
         {/* ── Left Sidebar (verbatim Image 2) ────────────────────────── */}
-        <aside className={`w-64 shrink-0 flex flex-col border-r bg-[#0A0D15]/90 backdrop-blur-xl z-20 transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-0 opacity-100 border-slate-800/80' : '-ml-64 opacity-0 border-transparent'}`}>
-          {/* Logo Header */}
-          <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF2D37] to-[#B80C19] shadow-[0_0_15px_rgba(239,35,60,0.5)]">
-                {/* Shield with 4-point star */}
-                <Shield size={18} className="text-white fill-white/20" />
-                <span className="absolute text-[10px] text-white font-black leading-none">✦</span>
+        <aside
+          className={`shrink-0 flex flex-col border-r bg-[#0A0D15]/90 backdrop-blur-xl z-20 transition-all duration-300 ease-in-out overflow-hidden ${
+            sidebarOpen
+              ? 'w-64 opacity-100 border-slate-800/80 pointer-events-auto visible'
+              : 'w-0 opacity-0 border-transparent pointer-events-none invisible'
+          }`}
+          style={{
+            minWidth: sidebarOpen ? '16rem' : '0px',
+            maxWidth: sidebarOpen ? '16rem' : '0px',
+          }}
+        >
+          {/* Inner wrapper with fixed width so contents do not squish during slide transition */}
+          <div className="w-64 flex flex-col h-full min-h-0">
+            {/* Logo Header */}
+            <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF2D37] to-[#B80C19] shadow-[0_0_15px_rgba(239,35,60,0.5)]">
+                  {/* Shield with 4-point star */}
+                  <Shield size={18} className="text-white fill-white/20" />
+                  <span className="absolute text-[10px] text-white font-black leading-none">✦</span>
+                </div>
+                <span className="text-base font-extrabold tracking-tight text-white">
+                  ActionGate
+                </span>
               </div>
-              <span className="text-base font-extrabold tracking-tight text-white">
-                ActionGate
+
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#201014] text-[#FF4D5A] border border-[#EF233C]/30">
+                v1.0.0-PROD
               </span>
             </div>
 
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#201014] text-[#FF4D5A] border border-[#EF233C]/30">
-              v1.0.0-PROD
-            </span>
-          </div>
+            {/* Navigation Items */}
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+              {NAV_ITEMS.map((item) => (
+                <SidebarNavItem
+                  key={item.id}
+                  item={item}
+                  active={activeTab}
+                  onClick={onTabChange}
+                />
+              ))}
+            </nav>
 
-          {/* Navigation Items */}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            {NAV_ITEMS.map((item) => (
-              <SidebarNavItem
-                key={item.id}
-                item={item}
-                active={activeTab}
-                onClick={onTabChange}
-              />
-            ))}
-          </nav>
-
-          {/* Bottom Status Box */}
-          <div className="px-3 pb-3">
-            <div className="p-3 rounded-xl bg-[#0F131D]/90 border border-slate-800/80 shadow-inner flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
-                <span className="text-xs font-bold text-white tracking-wide">
-                  Gateway Active
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                All agent actions protected
-              </p>
-            </div>
-          </div>
-
-          {/* User Profile Card */}
-          <div className="px-4 py-3 border-t border-slate-800/80 flex items-center justify-between bg-[#0A0D15]">
-            <div className="flex items-center gap-3">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                alt="Elena Vance"
-                className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800"
-              />
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-white leading-tight">
-                  Elena Vance
-                </span>
-                <span className="text-[10px] text-slate-400 font-mono leading-tight">
-                  Lead SecOps / NetSec
-                </span>
+            {/* Bottom Status Box */}
+            <div className="px-3 pb-3">
+              <div className="p-3 rounded-xl bg-[#0F131D]/90 border border-slate-800/80 shadow-inner flex flex-col gap-1 hover-card-scale">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
+                  <span className="text-xs font-bold text-white tracking-wide">
+                    Gateway Active
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  All agent actions protected
+                </p>
               </div>
             </div>
 
-            <button
-              title="Settings"
-              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
-            >
-              <Settings size={15} />
-            </button>
+            {/* User Profile Card */}
+            <div className="px-4 py-3 border-t border-slate-800/80 flex items-center justify-between bg-[#0A0D15] hover-card-scale">
+              <div className="flex items-center gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                  alt="Elena Vance"
+                  className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800"
+                />
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-white leading-tight">
+                    Elena Vance
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono leading-tight">
+                    Lead SecOps / NetSec
+                  </span>
+                </div>
+              </div>
+
+              <button
+                title="Settings"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
+              >
+                <Settings size={15} />
+              </button>
+            </div>
           </div>
         </aside>
 
         {/* ── Main Content Area ────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <div className="flex-1 w-full min-w-0 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out">
           {/* Top Header Bar */}
           <header className="h-16 shrink-0 px-8 border-b border-slate-800/80 bg-[#0A0D15]/75 backdrop-blur-md flex items-center justify-between z-20">
             {/* Left: Sidebar Toggle + View Title & Subtitle */}
@@ -188,7 +201,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                 onClick={() => setSidebarOpen((v) => !v)}
                 title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                 aria-label="Toggle sidebar"
-                className="shrink-0 p-2.5 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-600 hover:bg-[#151B29] transition-all cursor-pointer"
+                className="shrink-0 p-2.5 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-600 hover:bg-[#151B29] transition-all cursor-pointer hover-card-scale"
               >
                 <Menu size={20} />
               </button>
@@ -217,23 +230,31 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
 
             {/* Right: Search, Status, Notifications */}
             <div className="flex items-center gap-4 flex-1 min-w-0 justify-end ml-8">
-              {/* Search Bar with ⌘K — grows to fill free header width for prominence */}
-              <div className="relative flex items-center flex-1 min-w-0 max-w-lg">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              {/* Search Bar with ⌘K — Modern, sleek SaaS dashboard style */}
+              <div className="relative flex items-center w-full max-w-xl group">
+                {/* Strictly left-aligned magnifying glass icon */}
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                  <Search size={18} />
+                </div>
+
                 <input
                   type="text"
                   placeholder="Search actions, agents, policies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-16 py-2.5 rounded-xl text-sm text-slate-100 placeholder-slate-400 bg-[#141A28] border border-slate-700/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-slate-600 focus:outline-none focus:border-[#EF233C]/60 focus:ring-2 focus:ring-[#EF233C]/15 transition-all font-sans"
+                  className="w-full h-[42px] pl-11 pr-16 text-sm text-slate-100 placeholder-slate-400/80 bg-slate-900/80 backdrop-blur-md border border-slate-700/60 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_8px_rgba(0,0,0,0.3)] hover:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/25 transition-all duration-200 font-sans"
                 />
-                <kbd className="absolute right-3.5 top-1/2 -translate-y-1/2 px-2 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-300 bg-slate-800/90 border border-slate-700/70">
-                  ⌘K
-                </kbd>
+
+                {/* Cleanly aligned ⌘K keyboard shortcut badge on far-right */}
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <kbd className="inline-flex items-center gap-0.5 px-2 py-1 rounded-md text-[11px] font-mono font-medium text-slate-300 bg-slate-800/90 border border-slate-700/60 shadow-sm">
+                    <span className="text-xs">⌘</span>K
+                  </kbd>
+                </div>
               </div>
 
               {/* Gateway Online status pill */}
-              <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0E1522] border border-slate-800 text-xs font-mono font-medium">
+              <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0E1522] border border-slate-800 text-xs font-mono font-medium hover-card-scale">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
                 <span className="text-slate-300 text-[11px]">
                   Gateway Online - 99.99%
@@ -247,7 +268,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                   aria-label="Notifications"
                   aria-expanded={showNotifications}
                   title="Notifications"
-                  className={`relative p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  className={`relative p-2.5 rounded-xl border transition-all cursor-pointer hover-card-scale ${
                     showNotifications
                       ? 'text-white bg-[#181D2A] border-[#EF233C]/60 shadow-[0_0_14px_rgba(239,35,60,0.35)]'
                       : 'text-slate-300 hover:text-white bg-[#111624] border-slate-800 hover:border-slate-600 hover:bg-[#151B29]'
