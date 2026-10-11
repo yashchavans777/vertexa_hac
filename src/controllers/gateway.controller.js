@@ -381,27 +381,48 @@ const approveAction = asyncHandler(async (req, res) => {
  * @access Protected (HUMAN_ADMIN)
  */
 const getPendingActions = asyncHandler(async (req, res) => {
-  // Retrieve all ledger records marked HELD_FOR_APPROVAL
-  const pendingBlocks = await AuditLedger.find({ finalDecision: 'HELD_FOR_APPROVAL' })
-    .sort({ timestamp: -1 })
+  const pendingFilter = {
+    $or: [
+      { finalDecision: { $in: ['HELD_FOR_APPROVAL', 'PENDING', 'held'] } },
+      { status: { $in: ['HELD_FOR_APPROVAL', 'PENDING', 'held'] } }
+    ]
+  };
+
+  // Retrieve all ledger records marked HELD_FOR_APPROVAL or PENDING
+  const pendingBlocks = await AuditLedger.find(pendingFilter)
+    .sort({ timestamp: -1, createdAt: -1 })
     .limit(50)
     .lean();
 
   // Also check if any have already been reauthorized/rejected subsequently
-  const actionIds = pendingBlocks.map((b) => b.actionId);
-  const resolvedBlocks = await AuditLedger.find({
-    actionId: { $in: actionIds },
-    finalDecision: { $in: ['REAUTHORIZED', 'REJECTED', 'ALLOWED'] }
-  }).lean();
+  const actionIds = pendingBlocks.map((b) => b.actionId).filter(Boolean);
+  let activePending = pendingBlocks;
 
-  const resolvedActionIdSet = new Set(resolvedBlocks.map((b) => b.actionId));
-  const activePending = pendingBlocks.filter((b) => !resolvedActionIdSet.has(b.actionId));
+  if (actionIds.length > 0) {
+    const resolvedBlocks = await AuditLedger.find({
+      actionId: { $in: actionIds },
+      $or: [
+        { finalDecision: { $in: ['REAUTHORIZED', 'REJECTED', 'ALLOWED'] } },
+        { status: { $in: ['REAUTHORIZED', 'REJECTED', 'ALLOWED', 'EXECUTED'] } }
+      ]
+    }).lean();
+
+    const resolvedActionIdSet = new Set(resolvedBlocks.map((b) => b.actionId));
+    activePending = pendingBlocks.filter((b) => !resolvedActionIdSet.has(b.actionId));
+  }
+
+  // Normalize items to ensure frontend receives both finalDecision and status
+  const formattedPending = activePending.map((item) => ({
+    ...item,
+    status: item.status || item.finalDecision || 'HELD_FOR_APPROVAL',
+    finalDecision: item.finalDecision || item.status || 'HELD_FOR_APPROVAL'
+  }));
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      activePending,
-      `Retrieved ${activePending.length} actions held for operator review.`
+      formattedPending,
+      `Retrieved ${formattedPending.length} actions held for operator review.`
     )
   );
 });
