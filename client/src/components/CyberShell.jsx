@@ -9,6 +9,7 @@ import {
   Wifi,
   Clock,
   ChevronRight,
+  BarChart2,
 } from 'lucide-react';
 
 /* ── Navigation items ─────────────────────────────────────────── */
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { id: 'ledger',     label: 'Cryptographic Ledger',   icon: BookLock,    accent: '#00E676' },
   { id: 'policies',   label: 'Policy Engine',          icon: ShieldCheck, accent: '#FFB800' },
   { id: 'adversarial',label: 'Adversarial Benchmarks', icon: Swords,      accent: '#FF2D55' },
+  { id: 'analytics',  label: 'Threat Analytics',       icon: BarChart2,   accent: '#F01616' },
 ];
 
 /* ── Real-time digital clock ──────────────────────────────────── */
@@ -234,8 +236,10 @@ const panelVariants = {
 };
 
 /* ── CyberShell ───────────────────────────────────────────────── */
-export default function CyberShell({ children }) {
-  const [activeView, setActiveView] = useState('queue');
+export default function CyberShell({ children, activeTab, onTabChange }) {
+  const [internalActiveView, setInternalActiveView] = useState('queue');
+  const activeView = activeTab !== undefined ? activeTab : internalActiveView;
+  const setActiveView = onTabChange || setInternalActiveView;
   // Mock fluctuating agent count
   const [connectedAgents, setConnectedAgents] = useState(7);
 
@@ -286,7 +290,7 @@ export default function CyberShell({ children }) {
               <span style={{ color: 'var(--text-dim)', fontSize: 10 }}>/</span>
               <span className="text-[9px] tracking-[0.3em] uppercase"
                 style={{ color: 'var(--accent-cyan)' }}>
-                {NAV_ITEMS.find(i => i.id === activeView)?.label}
+                {NAV_ITEMS.find(i => i.id === activeView)?.label || activeView}
               </span>
             </div>
 
@@ -300,7 +304,7 @@ export default function CyberShell({ children }) {
                 transition={{ duration: 0.28, ease: 'easeOut' }}
                 className="glass-panel min-h-[calc(100vh-10rem)] p-6"
               >
-                {children}
+                {typeof children === 'function' ? children(activeView) : children}
               </motion.div>
             </AnimatePresence>
           </motion.main>

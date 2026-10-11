@@ -1,10 +1,19 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import CyberShell from './components/CyberShell';
+import ExecutiveAnalytics from './components/ExecutiveAnalytics';
 
-function AwaitingPlaceholder() {
+/* ─── View registry ──────────────────────────────────────────── */
+// Maps nav IDs from CyberShell to their rendered components.
+// Additional views (LiveQueue, Ledger, etc.) will be registered here in later steps.
+const VIEWS = {
+  analytics: <ExecutiveAnalytics />,
+};
+
+/* ─── Awaiting Placeholder (default for unbuilt views) ──────── */
+function AwaitingPlaceholder({ viewId }) {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6">
-      {/* Glowing animated ring */}
+      {/* Spinning rings */}
       <div className="relative flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
@@ -27,14 +36,12 @@ function AwaitingPlaceholder() {
             borderLeftColor: 'rgba(0,245,255,0.2)',
           }}
         />
-        {/* Center dot */}
         <div
           className="w-3 h-3 rounded-full pulse-online"
           style={{ background: 'var(--accent-cyan)' }}
         />
       </div>
 
-      {/* Label */}
       <div className="text-center space-y-2">
         <motion.p
           className="text-sm font-mono font-bold tracking-[0.4em] uppercase awaiting-pulse glow-cyan-text"
@@ -42,15 +49,13 @@ function AwaitingPlaceholder() {
         >
           ▸ AWAITING ACTION QUEUE DATA...
         </motion.p>
-        <p className="text-[10px] tracking-[0.25em] uppercase"
-          style={{ color: 'var(--text-dim)' }}>
-          Connecting to ActionGate Gateway · Port 5000
+        <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: 'var(--text-dim)' }}>
+          View: {viewId} · Connecting to ActionGate Gateway · Port 5000
         </p>
       </div>
 
-      {/* Mock scan bar */}
-      <div className="w-64 h-px overflow-hidden rounded-full"
-        style={{ background: 'var(--border-subtle)' }}>
+      {/* Scan bar */}
+      <div className="w-64 h-px overflow-hidden rounded-full" style={{ background: 'var(--border-subtle)' }}>
         <motion.div
           className="h-full rounded-full"
           style={{ background: 'var(--accent-cyan)', boxShadow: '0 0 8px var(--accent-cyan)' }}
@@ -62,10 +67,24 @@ function AwaitingPlaceholder() {
   );
 }
 
+/* ─── App ────────────────────────────────────────────────────── */
 export default function App() {
   return (
     <CyberShell>
-      <AwaitingPlaceholder />
+      {(activeView) => (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeView}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            style={{ height: '100%' }}
+          >
+            {VIEWS[activeView] ?? <AwaitingPlaceholder viewId={activeView} />}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </CyberShell>
   );
 }
