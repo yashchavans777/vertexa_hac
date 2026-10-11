@@ -1,22 +1,25 @@
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CyberShell from './components/CyberShell';
+import LiveQueue from './components/LiveQueue';
+import CryptographicLedger from './components/CryptographicLedger';
 import ExecutiveAnalytics from './components/ExecutiveAnalytics';
 import PolicyManager from './components/PolicyManager';
 import ChaosLab from './components/ChaosLab';
+import ThreatAlertBanner from './components/ThreatAlertBanner';
 
-/* ─── View Registry ──────────────────────────────────────────── */
-// Maps navigation IDs from CyberShell to their respective components
 const VIEWS = {
-  analytics: <ExecutiveAnalytics />,
+  queue: <LiveQueue />,
+  ledger: <CryptographicLedger />,
   policies: <PolicyManager />,
+  analytics: <ExecutiveAnalytics />,
   chaos: <ChaosLab />,
   adversarial: <ChaosLab />,
 };
 
-/* ─── Awaiting Placeholder (for pending views) ───────────────── */
 function AwaitingPlaceholder({ viewId }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6">
+    <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6 font-mono">
       <div className="relative flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
@@ -47,13 +50,13 @@ function AwaitingPlaceholder({ viewId }) {
 
       <div className="text-center space-y-2">
         <motion.p
-          className="text-sm font-mono font-bold tracking-[0.4em] uppercase awaiting-pulse glow-cyan-text"
+          className="text-sm font-bold tracking-[0.4em] uppercase awaiting-pulse glow-cyan-text"
           style={{ color: 'var(--accent-cyan)' }}
         >
-          ▸ AWAITING ACTION QUEUE DATA...
+          ▸ INITIALIZING VIEW [{viewId}]...
         </motion.p>
-        <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: 'var(--text-dim)' }}>
-          View: {viewId} · Connecting to ActionGate Gateway · Port 5000
+        <p className="text-[10px] tracking-[0.25em] uppercase text-slate-500">
+          Connecting to ActionGate Gateway · Port 5000
         </p>
       </div>
 
@@ -69,24 +72,25 @@ function AwaitingPlaceholder({ viewId }) {
   );
 }
 
-/* ─── Main Application ───────────────────────────────────────── */
 export default function App() {
+  const [activeTab, setActiveTab] = useState('queue');
+
   return (
-    <CyberShell>
-      {(activeView) => (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeView}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            style={{ height: '100%' }}
-          >
-            {VIEWS[activeView] ?? <AwaitingPlaceholder viewId={activeView} />}
-          </motion.div>
-        </AnimatePresence>
-      )}
+    <CyberShell activeTab={activeTab} onTabChange={setActiveTab}>
+      <ThreatAlertBanner />
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
+          className="w-full"
+        >
+          {VIEWS[activeTab] ?? <AwaitingPlaceholder viewId={activeTab} />}
+        </motion.div>
+      </AnimatePresence>
     </CyberShell>
   );
 }
