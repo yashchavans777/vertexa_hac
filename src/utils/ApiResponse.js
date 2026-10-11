@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * ActionGate - Standardized API Response Class
  * src/utils/ApiResponse.js
@@ -13,11 +12,7 @@ class ApiResponse {
    * @param {*} data - Serialized payload returned to the caller
    * @param {string} [message="Success"] - Operation description or status text
    */
-  constructor(statusCode, data, message = "Success") {
-=======
-class ApiResponse {
   constructor(statusCode, data, message = 'Success') {
->>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
     this.statusCode = statusCode;
     this.data = data;
     this.message = message;

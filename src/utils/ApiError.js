@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * ActionGate - Standardized Operational Error Class
  * src/utils/ApiError.js
@@ -16,17 +15,9 @@ class ApiError extends Error {
    */
   constructor(
     statusCode,
-    message = "Something went wrong",
-    errors = [],
-    stack = ""
-=======
-class ApiError extends Error {
-  constructor(
-    statusCode,
     message = 'Something went wrong',
     errors = [],
     stack = ''
->>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
   ) {
     super(message);
     this.statusCode = statusCode;

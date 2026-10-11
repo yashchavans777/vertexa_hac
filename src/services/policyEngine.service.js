@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-/**
- * ActionGate - Declarative Policy Engine Service
- * src/services/policyEngine.service.js
- * 
- * Principal Security Architect Specification:
- * Evaluates proposed tool execution against declarative zero-trust policies,
- * agent registry constraints, mutation safety limits, and AI risk thresholds.
- */
+const Policy = require('../models/policy.model');
 
 // Registered trusted AI Agents permitted to request tool invocations
 const TRUSTED_AGENTS = new Set([
@@ -48,115 +40,6 @@ const TOOL_CATEGORIES = {
     'disable_2fa'
   ])
 };
-
-const MAX_READ_ONLY_PAYLOAD_SIZE = 4096;
-
-/**
- * Evaluates an action payload and AI risk score against declarative security policies.
- * 
- * @param {Object} params
- * @param {string} params.agentId - Initiating agent ID
- * @param {string} params.toolName - Name of tool being called
- * @param {Object} params.payload - Parameters/arguments for the tool
- * @param {Object} params.riskAnalysis - Risk score and metadata from Python AI or Failover
- * 
- * @returns {{ effect: 'ALLOW' | 'BLOCK' | 'REQUIRE_APPROVAL', decisionReason: string, decisionPath: string }}
- */
-function evaluatePayloadAgainstPolicies({ agentId, toolName, payload = {}, riskAnalysis = {} }) {
-  const sanitizedAgent = String(agentId || '').trim();
-  const sanitizedTool = String(toolName || '').trim().toLowerCase();
-  const isFailover = riskAnalysis.isFailover === true;
-  const riskScore = typeof riskAnalysis.risk_score === 'number' ? riskAnalysis.risk_score : 50;
-
-  // 1. Identity Verification (Zero-Trust)
-  if (!TRUSTED_AGENTS.has(sanitizedAgent)) {
-    return {
-      effect: 'BLOCK',
-      decisionReason: `Zero-Trust Policy Violation: Unregistered or unauthorized agent identity '${agentId || 'UNKNOWN'}'.`,
-      decisionPath: 'STRICT_POLICY_DENY'
-    };
-  }
-
-  // 2. Destructive Tool Interception (Fail-Closed)
-  if (TOOL_CATEGORIES.DESTRUCTIVE.has(sanitizedTool)) {
-    return {
-      effect: 'BLOCK',
-      decisionReason: `Irreversible Action Intercepted: Tool '${sanitizedTool}' is classified as HIGHLY_DESTRUCTIVE. Autonomous execution strictly prohibited.`,
-      decisionPath: 'STRICT_POLICY_DENY'
-    };
-  }
-
-  // 3. AI Risk Critical Override
-  if (!isFailover && riskScore >= 85) {
-    return {
-      effect: 'BLOCK',
-      decisionReason: `AI Risk Threshold Exceeded: External analyzer computed critical anomaly risk (${riskScore}/100).`,
-      decisionPath: 'AI_INFORMED_ENGINE'
-    };
-  }
-
-  // 4. Failover Safe Mode Processing
-  if (isFailover) {
-    if (TOOL_CATEGORIES.MUTATING.has(sanitizedTool)) {
-      return {
-        effect: 'REQUIRE_APPROVAL',
-        decisionReason: `Failover Safe Mode Active: Python AI unavailable. State-modifying action '${sanitizedTool}' held for mandatory human dual-control.`,
-        decisionPath: 'FAILOVER_SAFE_MODE'
-      };
-    }
-
-    return {
-      effect: 'ALLOW',
-      decisionReason: `Failover Safe Mode Active: Read-only tool '${sanitizedTool}' allowed deterministically under degraded baseline.`,
-      decisionPath: 'FAILOVER_SAFE_MODE'
-    };
-  }
-
-  // 5. Read-Only Policy
-  if (TOOL_CATEGORIES.READ_ONLY.has(sanitizedTool)) {
-    const payloadBytes = Buffer.byteLength(JSON.stringify(payload || {}), 'utf8');
-    if (payloadBytes > MAX_READ_ONLY_PAYLOAD_SIZE) {
-      return {
-        effect: 'BLOCK',
-        decisionReason: `Read-Only Payload Size Exceeded: Payload size (${payloadBytes} bytes) exceeds safety ceiling (${MAX_READ_ONLY_PAYLOAD_SIZE} bytes). Potential exfiltration vector.`,
-        decisionPath: 'STRICT_POLICY_DENY'
-      };
-    }
-
-    return {
-      effect: 'ALLOW',
-      decisionReason: `Autonomous Action Authorized: Read-only tool within normal operational parameters.`,
-      decisionPath: 'AI_INFORMED_ENGINE'
-    };
-  }
-
-  // 6. Mutating Operations Policy
-  if (TOOL_CATEGORIES.MUTATING.has(sanitizedTool)) {
-    if (sanitizedTool === 'transfer_funds') {
-      const amount = Number(payload.amount);
-      if (amount > 10000) {
-        return {
-          effect: 'BLOCK',
-          decisionReason: `Autonomous Financial Limit Exceeded: Transfer amount ($${amount}) exceeds maximum threshold ($10,000).`,
-          decisionPath: 'STRICT_POLICY_DENY'
-        };
-      }
-    }
-
-    return {
-      effect: 'REQUIRE_APPROVAL',
-      decisionReason: `State-Modifying Action Held: Tool '${sanitizedTool}' requires human authorization prior to execution.`,
-      decisionPath: 'AI_INFORMED_ENGINE'
-    };
-  }
-
-  // Fallback Catch-All
-  return {
-    effect: 'BLOCK',
-    decisionReason: `Unrecognized Tool Action: Tool '${sanitizedTool}' not permitted in active policy catalog.`,
-    decisionPath: 'STRICT_POLICY_DENY'
-=======
-const Policy = require('../models/policy.model');
 
 /**
  * Normalized blast radius scoring dictionary.
@@ -206,13 +89,6 @@ function isToolMatch(toolName, pattern) {
 /**
  * Evaluates contextual execution conditions against real-time AI risk telemetry.
  *
- * Supported Conditions:
- * - maxRiskScore (Number): Rejects if calculated risk exceeds threshold
- * - minRiskScore (Number): Matches if risk score is equal to or above minimum
- * - maxBlastRadius (Number | String): Caps maximum allowable blast radius
- * - isReversible (Boolean): Enforces reversibility requirements
- * - requireExplicitArguments (Array<String>): Enforces presence of required arguments
- *
  * @param {Object} conditions - Declared policy conditional constraints
  * @param {Object} riskAnalysis - Real-time AI risk analysis metrics
  * @param {Object} payloadArguments - Arguments supplied to the tool
@@ -220,7 +96,6 @@ function isToolMatch(toolName, pattern) {
  */
 function evaluateConditions(conditions, riskAnalysis, payloadArguments = {}) {
   if (!conditions || Object.keys(conditions).length === 0) {
-    // Unconditional policy match
     return true;
   }
 
@@ -289,22 +164,26 @@ function evaluateConditions(conditions, riskAnalysis, payloadArguments = {}) {
 /**
  * Enterprise Declarative Policy Evaluator
  *
- * Implements deterministic Policy-as-Code evaluation:
- * 1. Fetches all active policies ordered by priority (descending).
- * 2. Matches toolName against targetTools.
- * 3. Evaluates runtime conditions (riskScore, blastRadius, isReversible).
- * 4. Yields the winning effect (ALLOW, BLOCK, REQUIRE_APPROVAL).
- * 5. Strictly enforces Zero Trust "Default Deny" if no policy matches.
- *
- * @param {Object} aiAgentPayload - { toolName: string, arguments: Object }
+ * @param {Object} aiAgentPayload - { toolName: string, arguments: Object, agentId?: string }
  * @param {Object} aiRiskAnalysis - { riskScore: number, blastRadius: string|number, isReversible: boolean }
  * @returns {Promise<Object>} Resolved evaluation result containing effect, matchedPolicyName, decisionReason
  */
 async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
-  const { toolName, arguments: toolArguments = {} } = aiAgentPayload || {};
+  const { toolName, arguments: toolArguments = {}, agentId } = aiAgentPayload || {};
   const riskAnalysis = aiRiskAnalysis || {};
 
-  // Fetch all active policies sorted by priority DESC (higher priority evaluated first)
+  // Check agent registration if provided
+  if (agentId && !TRUSTED_AGENTS.has(agentId)) {
+    return {
+      effect: 'BLOCK',
+      matchedPolicyName: 'UNREGISTERED_AGENT_DENIAL',
+      decisionReason: `Untrusted Agent Identity: Agent '${agentId}' is not registered in the trusted enterprise directory.`,
+      priority: 999,
+      evaluatedConditions: {}
+    };
+  }
+
+  // Fetch all active policies sorted by priority DESC
   const activePolicies = await Policy.find({ isActive: true })
     .sort({ priority: -1, createdAt: 1 })
     .lean();
@@ -333,24 +212,42 @@ async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
     }
   }
 
-  // Default Deny: In an Enterprise Zero-Trust architecture, anything not explicitly permitted is blocked
+  // Fallback heuristic if dynamic policy database has no matches
+  const sanitizedTool = (toolName || '').toLowerCase().trim();
+  if (TOOL_CATEGORIES.DESTRUCTIVE.has(sanitizedTool)) {
+    return {
+      effect: 'BLOCK',
+      matchedPolicyName: 'SYSTEM_DESTRUCTIVE_SAFEGUARD',
+      decisionReason: `Destructive Operation Intercepted: Tool '${sanitizedTool}' categorized as irreversible destructive action.`,
+      priority: -1,
+      evaluatedConditions: {}
+    };
+  }
+
+  if (TOOL_CATEGORIES.MUTATING.has(sanitizedTool)) {
+    return {
+      effect: 'REQUIRE_APPROVAL',
+      matchedPolicyName: 'SYSTEM_MUTATING_HOLD',
+      decisionReason: `State-Modifying Action Held: Tool '${sanitizedTool}' requires human authorization prior to execution.`,
+      priority: -1,
+      evaluatedConditions: {}
+    };
+  }
+
+  // Default Deny: Zero-Trust baseline
   return {
     effect: 'BLOCK',
     matchedPolicyName: 'SYSTEM_DEFAULT_DENY',
     decisionReason: `Default Deny: No active security policy authorized tool "${toolName || 'UNKNOWN'}" under current risk constraints.`,
     priority: -1,
     evaluatedConditions: {}
->>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
   };
 }
 
 module.exports = {
   evaluatePayloadAgainstPolicies,
-<<<<<<< HEAD
+  isToolMatch,
+  evaluateConditions,
   TRUSTED_AGENTS,
   TOOL_CATEGORIES
-=======
-  isToolMatch,
-  evaluateConditions
->>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
 };
