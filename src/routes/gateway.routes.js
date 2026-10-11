@@ -29,6 +29,13 @@ router.get('/pending', getPendingActions);
 router.post('/evaluate', evaluateAction);
 
 /**
+ * @route   GET /api/v1/gateway/pending
+ * @desc    Fetch pending actions held for human review
+ * @access  Protected (HUMAN_ADMIN)
+ */
+router.get('/pending', getPendingActions);
+
+/**
  * @route   POST /api/v1/gateway/approve
  * @desc    Human-in-the-loop review and deep reauthorization check (Separation of Duties)
  * @access  Protected (HUMAN_ADMIN only)
@@ -36,3 +43,4 @@ router.post('/evaluate', evaluateAction);
 router.post('/approve', approveAction);
 
 module.exports = router;
+

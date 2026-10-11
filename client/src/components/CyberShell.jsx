@@ -38,8 +38,8 @@ function SidebarNavItem({ item, active, onClick }) {
     <button
       onClick={() => onClick(item.id)}
       className={`
-        group relative w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left
-        transition-all duration-150 cursor-pointer font-medium text-xs select-none
+        group relative w-full min-w-0 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left
+        transition-all duration-150 cursor-pointer font-medium text-xs select-none overflow-hidden
         ${isActive
           ? 'bg-[#181D2A] text-white font-semibold shadow-inner'
           : 'text-slate-400 hover:text-slate-200 hover:bg-[#131722]/80'
@@ -64,12 +64,12 @@ function SidebarNavItem({ item, active, onClick }) {
         }`}
       />
 
-      <span className="truncate flex-1 tracking-wide">{item.label}</span>
+      <span className="min-w-0 flex-1 truncate tracking-wide">{item.label}</span>
 
-      {/* Pill Badge (e.g. 23, 6) */}
+      {/* Pill Badge (e.g. 23, 6) — fixed-size pill, inline at row end, always contained */}
       {item.badge !== undefined && (
         <span
-          className="px-2 py-0.5 rounded-full text-[11px] font-bold font-mono shrink-0"
+          className="relative z-10 inline-flex items-center justify-center shrink-0 min-w-[24px] h-5 px-1.5 rounded-full text-[10px] leading-none font-bold font-mono tabular-nums"
           style={{
             backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.2)' : '#192030',
             color: item.badgeColor === '#FF4D4D' ? '#FF5C6E' : '#94A3B8',
@@ -171,7 +171,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
           {/* Top Header Bar */}
           <header className="h-16 shrink-0 px-8 border-b border-slate-800/80 bg-[#0A0D15]/75 backdrop-blur-md flex items-center justify-between z-20">
             {/* Left: View Title & Subtitle */}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <h2 className="text-base font-extrabold text-white tracking-tight leading-tight">
                 {activeTab === 'overview' && 'Security Overview'}
                 {activeTab === 'queue' && 'Live Actions Queue'}
@@ -181,7 +181,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                 {activeTab === 'ledger' && 'Cryptographic Audit Trail'}
                 {activeTab === 'chaos' && 'Chaos & Adversarial Lab'}
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 truncate">
                 {activeTab === 'overview' && 'Monitor and authorize autonomous AI actions in real time.'}
                 {activeTab === 'queue' && 'Real-time telemetry stream of agent intents undergoing gateway inspection.'}
                 {activeTab === 'approvals' && 'High-impact payloads requiring cryptographic human-in-the-loop sign-off.'}
@@ -193,24 +193,24 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
             </div>
 
             {/* Right: Search, Status, Notification, Avatar */}
-            <div className="flex items-center gap-4">
-              {/* Search Bar with ⌘K */}
-              <div className="relative flex items-center">
-                <Search size={14} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+            <div className="flex items-center gap-4 flex-1 min-w-0 justify-end ml-8">
+              {/* Search Bar with ⌘K — grows to fill free header width for prominence */}
+              <div className="relative flex items-center flex-1 min-w-0 max-w-lg">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search actions, agents, policies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-72 pl-9 pr-11 py-1.5 rounded-xl text-xs bg-[#111624]/90 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#EF233C]/50 transition-all font-sans"
+                  className="w-full pl-11 pr-16 py-2.5 rounded-xl text-sm text-slate-100 placeholder-slate-400 bg-[#141A28] border border-slate-700/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-slate-600 focus:outline-none focus:border-[#EF233C]/60 focus:ring-2 focus:ring-[#EF233C]/15 transition-all font-sans"
                 />
-                <kbd className="absolute right-3 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-800/80 border border-slate-700/60">
+                <kbd className="absolute right-3.5 top-1/2 -translate-y-1/2 px-2 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-300 bg-slate-800/90 border border-slate-700/70">
                   ⌘K
                 </kbd>
               </div>
 
               {/* Gateway Online status pill */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0E1522] border border-slate-800 text-xs font-mono font-medium">
+              <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0E1522] border border-slate-800 text-xs font-mono font-medium">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
                 <span className="text-slate-300 text-[11px]">
                   Gateway Online - 99.99%
@@ -219,7 +219,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
 
               {/* Notification Bell */}
               <button
-                className="relative p-2 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
+                className="relative shrink-0 p-2 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
                 title="Notifications"
               >
                 <Bell size={15} />
@@ -230,7 +230,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
                 alt="Elena Vance"
-                className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800 cursor-pointer"
+                className="shrink-0 w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800 cursor-pointer"
               />
             </div>
           </header>

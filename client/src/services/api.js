@@ -5,7 +5,7 @@ import axios from 'axios';
  * Automatically resolves endpoint URL from Vite environment variables (import.meta.env).
  * Default fallback connects to IPv4 loopback on port 5001.
  */
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.port === '5001' ? 'http://127.0.0.1:5001/api/v1' : 'http://127.0.0.1:5000/api/v1');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

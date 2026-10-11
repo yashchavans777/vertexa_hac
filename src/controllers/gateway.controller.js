@@ -186,36 +186,6 @@ const evaluateAction = asyncHandler(async (req, res) => {
 });
 
 /**
- * Fetch all pending actions currently held for human authorization
- * 
- * @route GET /api/v1/gateway/pending
- * @access Protected (HUMAN_ADMIN)
- */
-const getPendingActions = asyncHandler(async (req, res) => {
-  // Find all audit ledger blocks with HELD_FOR_APPROVAL
-  const heldBlocks = await AuditLedger.find({ finalDecision: 'HELD_FOR_APPROVAL' })
-    .sort({ timestamp: -1 })
-    .lean();
-
-  // Filter out any actions that have already been resolved (REAUTHORIZED or REJECTED)
-  const resolvedActionIds = await AuditLedger.distinct('actionId', {
-    finalDecision: { $in: ['REAUTHORIZED', 'REJECTED'] }
-  });
-
-  const activeHeld = heldBlocks.filter(
-    (block) => !resolvedActionIds.includes(block.actionId)
-  );
-
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      activeHeld,
-      `Retrieved ${activeHeld.length} pending actions awaiting operator authorization.`
-    )
-  );
-});
-
-/**
  * Human Review / Approval Endpoint (Separation of Duties & Strict Reauthorization)
  * 
  * @route POST /api/v1/gateway/approve
@@ -224,7 +194,7 @@ const getPendingActions = asyncHandler(async (req, res) => {
 const approveAction = asyncHandler(async (req, res) => {
   const { actionId, decision = 'APPROVED', reason } = req.body || {};
   const approverRole = req.headers['x-user-role'] || req.body?.approverRole || 'HUMAN_ADMIN';
-  const submittedPayload = req.body?.approvedPayload !== undefined ? req.body.approvedPayload : req.body?.editedPayload;
+  const effectivePayload = req.body?.approvedPayload !== undefined ? req.body.approvedPayload : req.body?.editedPayload;
 
   // 1. Validation & Separation of Duties
   if (!actionId) {
@@ -293,24 +263,46 @@ const approveAction = asyncHandler(async (req, res) => {
   }
 
   // 4. Strict Reauthorization Check (Deep payload integrity comparison)
-  const approvedPayload = submittedPayload !== undefined ? submittedPayload : originalBlock.payload;
-  const isIdentical = isPayloadIdentical(approvedPayload, originalBlock.payload);
+  // Ensures that what the human is approving is BIT-FOR-BIT identical to what the agent requested.
+  // If no payload was submitted by the operator, default to the original sealed payload.
+  const isIdentical = isPayloadIdentical(
+    effectivePayload !== undefined ? effectivePayload : originalBlock.payload,
+    originalBlock.payload
+  );
 
-  if (!isIdentical) {
-    // Audit the tampering attempt directly onto the ledger before rejecting
+  if (!isIdentical || decision === 'REJECTED') {
+    // Audit the rejection/tampering attempt directly onto the ledger
     const tamperBlock = await appendBlock({
       actionId,
       agentId: originalBlock.agentId,
       toolName: originalBlock.toolName,
       payload: {
         originalPayload: originalBlock.payload,
-        tamperedPayloadSubmitted: approvedPayload
+        submittedPayload: effectivePayload
       },
       finalDecision: 'REJECTED',
       decisionPath: 'HUMAN_ADMIN_ACTION',
-      decisionReason: 'REJECTED_TAMPERED: Approved payload differed from original agent request. Potential parameter tampering or TOCTOU attack.',
+      decisionReason: decision === 'REJECTED' 
+        ? 'REJECTED_BY_OPERATOR: Human admin explicitly rejected pending action.'
+        : 'REJECTED_TAMPERED: Approved payload differed from original agent request. Potential parameter tampering or TOCTOU attack.',
       timestamp: new Date()
     });
+
+    if (decision === 'REJECTED') {
+      return res.status(200).json(
+        new ApiResponse(
+          200,
+          {
+            actionId,
+            status: 'REJECTED',
+            finalDecision: 'REJECTED',
+            decisionPath: 'HUMAN_ADMIN_ACTION',
+            rejectionLedgerBlock: tamperBlock.index
+          },
+          "Action rejected by human administrator."
+        )
+      );
+    }
 
     throw new ApiError(
       400,
@@ -319,7 +311,7 @@ const approveAction = asyncHandler(async (req, res) => {
         {
           issue: "PAYLOAD_TAMPER_DETECTED",
           originalPayload: originalBlock.payload,
-          submittedPayload: approvedPayload,
+          submittedPayload: effectivePayload,
           rejectionLedgerBlock: tamperBlock.index
         }
       ]
@@ -331,7 +323,7 @@ const approveAction = asyncHandler(async (req, res) => {
     actionId,
     agentId: originalBlock.agentId,
     toolName: originalBlock.toolName,
-    payload: approvedPayload,
+    payload: effectivePayload,
     finalDecision: 'REAUTHORIZED',
     decisionPath: 'HUMAN_ADMIN_ACTION',
     decisionReason: `Action reauthorized and executed following verified human operator sign-off.`,
@@ -378,8 +370,41 @@ const approveAction = asyncHandler(async (req, res) => {
   );
 });
 
+/**
+ * Fetch all pending actions held for human operator review
+ * 
+ * @route GET /api/v1/gateway/pending
+ * @access Protected (HUMAN_ADMIN)
+ */
+const getPendingActions = asyncHandler(async (req, res) => {
+  // Retrieve all ledger records marked HELD_FOR_APPROVAL
+  const pendingBlocks = await AuditLedger.find({ finalDecision: 'HELD_FOR_APPROVAL' })
+    .sort({ timestamp: -1 })
+    .limit(50)
+    .lean();
+
+  // Also check if any have already been reauthorized/rejected subsequently
+  const actionIds = pendingBlocks.map((b) => b.actionId);
+  const resolvedBlocks = await AuditLedger.find({
+    actionId: { $in: actionIds },
+    finalDecision: { $in: ['REAUTHORIZED', 'REJECTED', 'ALLOWED'] }
+  }).lean();
+
+  const resolvedActionIdSet = new Set(resolvedBlocks.map((b) => b.actionId));
+  const activePending = pendingBlocks.filter((b) => !resolvedActionIdSet.has(b.actionId));
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      activePending,
+      `Retrieved ${activePending.length} actions held for operator review.`
+    )
+  );
+});
+
 module.exports = {
   evaluateAction,
   approveAction,
   getPendingActions
 };
+
