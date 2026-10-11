@@ -209,6 +209,7 @@ async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
         return {
           effect: policy.effect,
           matchedPolicyName: policy.policyName,
+          decisionPath: `Matched ${policy.effect} policy for ${toolName}`,
           decisionReason: `Policy Matched: "${policy.policyName}" evaluated with effect ${policy.effect}.`,
           priority: policy.priority,
           evaluatedConditions: policy.conditions
@@ -223,6 +224,7 @@ async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
     return {
       effect: 'BLOCK',
       matchedPolicyName: 'SYSTEM_DESTRUCTIVE_SAFEGUARD',
+      decisionPath: `Blocked destructive action for ${sanitizedTool}`,
       decisionReason: `Destructive Operation Intercepted: Tool '${sanitizedTool}' categorized as irreversible destructive action.`,
       priority: -1,
       evaluatedConditions: {}
@@ -233,6 +235,7 @@ async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
     return {
       effect: 'REQUIRE_APPROVAL',
       matchedPolicyName: 'SYSTEM_MUTATING_HOLD',
+      decisionPath: `Matched REQUIRE_APPROVAL policy for ${sanitizedTool}`,
       decisionReason: `State-Modifying Action Held: Tool '${sanitizedTool}' requires human authorization prior to execution.`,
       priority: -1,
       evaluatedConditions: {}
@@ -243,6 +246,7 @@ async function evaluatePayloadAgainstPolicies(aiAgentPayload, aiRiskAnalysis) {
   return {
     effect: 'BLOCK',
     matchedPolicyName: 'SYSTEM_DEFAULT_DENY',
+    decisionPath: `Default zero-trust policy deny for ${toolName || 'UNKNOWN'}`,
     decisionReason: `Default Deny: No active security policy authorized tool "${toolName || 'UNKNOWN'}" under current risk constraints.`,
     priority: -1,
     evaluatedConditions: {}
