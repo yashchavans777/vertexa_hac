@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   ChevronRight,
   ExternalLink,
+  Flame,
 } from 'lucide-react';
 import CosmicThreatBackground from './CosmicThreatBackground';
 
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { id: 'agents',    label: 'Agents',          icon: Bot, badge: 6, badgeColor: '#1E2538' },
   { id: 'policies',  label: 'Policies',        icon: Sliders },
   { id: 'ledger',    label: 'Audit Trail',     icon: Lock },
+  { id: 'chaos',     label: 'Chaos Lab',       icon: Flame },
 ];
 
 /* ── Sidebar NavItem Component ────────────────────────────────── */
@@ -171,10 +173,22 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
             {/* Left: View Title & Subtitle */}
             <div className="flex flex-col">
               <h2 className="text-base font-extrabold text-white tracking-tight leading-tight">
-                Security Overview
+                {activeTab === 'overview' && 'Security Overview'}
+                {activeTab === 'queue' && 'Live Actions Queue'}
+                {activeTab === 'approvals' && 'Human Approval Queue'}
+                {activeTab === 'agents' && 'Connected Autonomous Agents'}
+                {activeTab === 'policies' && 'Policy Engine & Guardrails'}
+                {activeTab === 'ledger' && 'Cryptographic Audit Trail'}
+                {activeTab === 'chaos' && 'Chaos & Adversarial Lab'}
               </h2>
               <p className="text-xs text-slate-400">
-                Monitor and authorize autonomous AI actions in real time.
+                {activeTab === 'overview' && 'Monitor and authorize autonomous AI actions in real time.'}
+                {activeTab === 'queue' && 'Real-time telemetry stream of agent intents undergoing gateway inspection.'}
+                {activeTab === 'approvals' && 'High-impact payloads requiring cryptographic human-in-the-loop sign-off.'}
+                {activeTab === 'agents' && 'Autonomous agents registered under zero-trust authorization bounds.'}
+                {activeTab === 'policies' && 'Define deterministic invariants, allowed tools, and threshold limits.'}
+                {activeTab === 'ledger' && 'Immutable SHA-256 Merkle chain with verifiable forensic integrity proofs.'}
+                {activeTab === 'chaos' && 'Simulate MITM tampering, malicious prompt injections, and failover.'}
               </p>
             </div>
 
