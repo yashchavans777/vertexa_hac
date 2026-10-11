@@ -7,20 +7,29 @@ const app = require("./app");
 /**
  * ActionGate Entry Point
  *
- * Bootstrap order:
- * 1. Configure environment variables.
- * 2. Establish MongoDB connection.
- * 3. Start the HTTP server only after a confirmed DB connection.
- *
- * This guarantees the API never accepts live traffic in an uninitialized state.
+ * Strict Bootstrapping Protocol:
+ * 1. Establish and verify MongoDB connection.
+ * 2. Start HTTP listener ONLY AFTER DB promise resolves.
+ * 3. Fail fast and exit if database connection fails.
  */
 connectDB()
   .then(() => {
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`\u26A1 ActionGate server is running on port: ${process.env.PORT || 5000}`);
+    const PORT = process.env.PORT || 5000;
+    const server = app.listen(PORT, () => {
+      console.log(`⚡ ActionGate Gateway listening on: http://127.0.0.1:${PORT}`);
+      console.log(`🔒 Health Check endpoint active at: http://127.0.0.1:${PORT}/health\n`);
+    });
+
+    // Handle process termination gracefully
+    process.on("SIGINT", () => {
+      console.log("\n[ActionGate] Shutting down server gracefully...");
+      server.close(() => {
+        console.log("[ActionGate] Server stopped.");
+        process.exit(0);
+      });
     });
   })
   .catch((error) => {
-    console.error("MONGODB connection FAILED:", error);
+    console.error("FATAL: Server startup aborted due to database failure:", error.message);
     process.exit(1);
   });
