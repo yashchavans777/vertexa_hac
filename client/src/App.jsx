@@ -75,6 +75,14 @@ function AwaitingPlaceholder({ viewId }) {
 export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
 
+  React.useEffect(() => {
+    const handleGlobalNav = (e) => {
+      if (e.detail) setActiveTab(e.detail);
+    };
+    window.addEventListener('actiongate:navigate', handleGlobalNav);
+    return () => window.removeEventListener('actiongate:navigate', handleGlobalNav);
+  }, []);
+
   const getActiveView = (tab) => {
     switch (tab) {
       case 'overview':
@@ -85,7 +93,7 @@ export default function App() {
       case 'agents':
         return <LiveQueue />;
       case 'policies':
-        return <PolicyManager />;
+        return <PolicyManager onNavigate={setActiveTab} />;
       case 'ledger':
         return <CryptographicLedger />;
       case 'chaos':
@@ -107,7 +115,7 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.28, ease: 'easeOut' }}
-          className="w-full"
+          className="w-full max-w-full overflow-x-hidden box-border"
         >
           {getActiveView(activeTab)}
         </motion.div>

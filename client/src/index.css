@@ -184,10 +184,54 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* ─── Universal Card & Container Standards ────────────────────── */
+.cyber-card,
+.glass-panel,
+.topology-beam-card,
+[data-card="true"] {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out, border-color 0.25s ease-in-out, background-color 0.25s ease-in-out;
+}
+
+/* Stat Box & Balanced KPI Container Rule */
+.stat-box-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem; /* p-6 standard */
+  gap: 0.75rem; /* gap-3 standard */
+  border-radius: 1rem;
+}
+
+@media (min-width: 640px) {
+  .stat-box-card {
+    padding: 1.75rem;
+  }
+}
+
+/* Centered Feature Box Rule */
+.center-card-box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  gap: 0.75rem;
+}
+
 /* ─── Universal Smooth Hover Scale-Up Effect ─────────────────── */
 .hover-card-scale,
 .glass-panel,
 .glass-panel-hover,
+.cyber-card,
+.stat-box-card,
 [data-hover-card="true"] {
   will-change: transform, box-shadow;
   transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out, border-color 0.25s ease-in-out, background-color 0.25s ease-in-out;
@@ -195,6 +239,8 @@ body {
 
 .hover-card-scale:hover,
 .glass-panel-hover:hover,
+.cyber-card:hover,
+.stat-box-card:hover,
 [data-hover-card="true"]:hover {
   transform: scale(1.02);
   cursor: pointer;

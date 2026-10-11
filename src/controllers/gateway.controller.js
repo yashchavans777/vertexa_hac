@@ -418,6 +418,12 @@ const getPendingActions = asyncHandler(async (req, res) => {
     finalDecision: item.finalDecision || item.status || 'HELD_FOR_APPROVAL'
   }));
 
+  // Disable browser and intermediary proxy caching completely
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+
   return res.status(200).json(
     new ApiResponse(
       200,

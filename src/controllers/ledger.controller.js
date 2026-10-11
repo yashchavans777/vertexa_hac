@@ -34,6 +34,12 @@ const getLedgerChain = asyncHandler(async (req, res) => {
 
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
+  // Disable browser and intermediary proxy caching completely
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+
   return res.status(200).json(
     new ApiResponse(
       200,
@@ -65,6 +71,10 @@ const verifyAuditIntegrity = asyncHandler(async (req, res) => {
   const message = verificationResult.isValid
     ? "Cryptographic chain integrity verified. All hashes and links valid."
     : `Chain integrity compromised! Mathematical mismatch detected at block index ${verificationResult.compromisedIndex}.`;
+
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   return res.status(statusCode).json(
     new ApiResponse(statusCode, verificationResult, message)

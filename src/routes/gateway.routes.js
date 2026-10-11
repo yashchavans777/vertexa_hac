@@ -41,6 +41,7 @@ router.get('/pending', getPendingActions);
  * @access  Protected (HUMAN_ADMIN only)
  */
 router.post('/approve', approveAction);
+router.post('/resolve', approveAction);
 
 module.exports = router;
 

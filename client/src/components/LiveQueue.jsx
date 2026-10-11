@@ -187,12 +187,23 @@ export const LiveQueue = () => {
           : `Operator committed ${decision} decision in SOC Live Queue`
       };
 
-      const response = await api.post('/gateway/approve', payloadBody, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-role': 'HUMAN_ADMIN'
-        }
-      });
+      let response;
+      try {
+        response = await api.post('/gateway/resolve', payloadBody, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-role': 'HUMAN_ADMIN'
+          }
+        });
+      } catch (err) {
+        // Fallback to /gateway/approve if /resolve is unavailable
+        response = await api.post('/gateway/approve', payloadBody, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-role': 'HUMAN_ADMIN'
+          }
+        });
+      }
 
       showToast(
         decision === 'APPROVED' ? 'success' : 'warning',

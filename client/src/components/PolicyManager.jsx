@@ -84,7 +84,7 @@ const SEED_POLICIES = [
   },
 ];
 
-export default function PolicyManager() {
+export default function PolicyManager({ onNavigate }) {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -450,7 +450,7 @@ export default function PolicyManager() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className={`glass-panel p-5 rounded-xl flex flex-col justify-between transition-all duration-300 relative hover-card-scale ${
+              className={`glass-panel p-6 sm:p-7 rounded-2xl flex flex-col justify-between transition-all duration-300 relative hover-card-scale box-border ${
                 !policy.isActive && !isBlockPolicy ? 'opacity-40' : ''
               }`}
               style={{
@@ -625,6 +625,7 @@ export default function PolicyManager() {
         policies={policies}
         isOpen={isSimulateOpen}
         onToggle={setIsSimulateOpen}
+        onNavigate={onNavigate}
       />
     </div>
   );

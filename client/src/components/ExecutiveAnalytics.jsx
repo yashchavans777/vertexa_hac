@@ -733,9 +733,9 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 2: FOUR CORE METRIC CARDS WITH SPARKLINES
       ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Metric 1 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-7 stat-box-card flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300 box-border">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               INTERCEPTED ACTIONS (24H)
@@ -743,14 +743,14 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             <Zap size={15} className="text-emerald-400" />
           </div>
 
-          <div className="my-3">
+          <div className="my-2 text-center sm:text-left">
             <div className="text-3xl sm:text-4xl font-mono font-black text-white tracking-tight">
               {18420 + streamActions.length}
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-1 text-xs font-mono text-emerald-400">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
               <Activity size={13} />
               <span>+18.4% agent action volume</span>
             </div>
@@ -767,11 +767,11 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                 </linearGradient>
               </defs>
               <path
-                d="M 0 18 Q 20 22, 40 14 T 70 8 T 100 12 L 100 24 L 0 24 Z"
+                d="M 0 20 Q 20 22, 40 14 T 70 8 T 100 4 L 100 24 L 0 24 Z"
                 fill="url(#metric1-area)"
               />
               <path
-                d="M 0 18 Q 20 22, 40 14 T 70 8 T 100 12"
+                d="M 0 20 Q 20 22, 40 14 T 70 8 T 100 4"
                 fill="none"
                 stroke="url(#metric1-line)"
                 strokeWidth="2.5"
@@ -783,7 +783,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 2 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-amber-500/40 transition-all duration-300">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-7 stat-box-card flex flex-col justify-between shadow-xl hover-card-scale hover:border-amber-500/40 transition-all duration-300 box-border">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               HUMAN PENDING QUEUE
@@ -791,14 +791,14 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             <span className="text-amber-400 text-xs font-mono font-bold">⚡</span>
           </div>
 
-          <div className="my-3">
+          <div className="my-2 text-center sm:text-left">
             <div className="text-3xl sm:text-4xl font-mono font-black text-amber-400 tracking-tight">
               {streamActions.filter((s) => s.status === 'AWAITING_APPROVAL').length}
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-1 text-xs font-mono text-slate-400">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
               <Clock size={13} />
               <span>Average decision time: 38s</span>
             </div>
@@ -831,7 +831,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 3 */}
-        <div className="rounded-2xl border border-blue-500/40 bg-[#0B1528]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(59,130,246,0.18)] hover-card-scale hover:border-blue-400/60 transition-all duration-300">
+        <div className="rounded-2xl border border-blue-500/40 bg-[#0B1528]/85 backdrop-blur-xl p-6 sm:p-7 stat-box-card flex flex-col justify-between shadow-[0_0_30px_rgba(59,130,246,0.18)] hover-card-scale hover:border-blue-400/60 transition-all duration-300 box-border">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-blue-400 uppercase font-bold">
               ANOMALIES DEFLECTED
@@ -839,7 +839,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             <AlertTriangle size={15} className="text-blue-400" />
           </div>
 
-          <div className="my-3">
+          <div className="my-2 text-center sm:text-left">
             <div
               className="text-3xl sm:text-4xl font-mono font-black text-blue-400 tracking-tight"
               style={{ textShadow: '0 0 25px rgba(59, 130, 246, 0.7)' }}
@@ -849,7 +849,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-1 text-xs font-mono text-blue-300">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-blue-300">
               <Ban size={13} className="text-blue-400" />
               <span>Prompt injections & exfiltration halts</span>
             </div>
@@ -882,7 +882,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Metric 4 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-7 stat-box-card flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300 box-border">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               CRYPTOGRAPHIC INTEGRITY
@@ -890,13 +890,13 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             <ShieldCheck size={16} className="text-emerald-400" />
           </div>
 
-          <div className="my-3">
+          <div className="my-2 text-center sm:text-left">
             <div className="text-3xl sm:text-4xl font-mono font-black text-white tracking-tight">
               100%
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-1 text-xs font-mono text-emerald-400">
               <CheckCircle2 size={13} />
               <span>Audit Chain Verified (SHA-256)</span>
@@ -1317,7 +1317,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 relative z-10">
           {/* Pillar 1 */}
-          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale">
+          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-7 flex flex-col justify-between shadow-xl space-y-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale box-border">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-cyan-400 shadow-md">
                 <Bot size={22} />
@@ -1337,7 +1337,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 2: Featured Deterministic Gate */}
-          <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] transition-all duration-300 hover:scale-[1.02] hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/20 hover-card-scale">
+          <div className="rounded-2xl border border-[#EF233C]/50 bg-[#160A0E]/85 backdrop-blur-xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] space-y-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/20 hover-card-scale box-border">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_15px_rgba(239,35,60,0.5)]">
                 <Shield size={22} className="fill-white/20" />
@@ -1357,7 +1357,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 3 */}
-          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale">
+          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-7 flex flex-col justify-between shadow-xl space-y-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale box-border">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-emerald-400 shadow-md">
                 <Lock size={22} />
@@ -1385,8 +1385,8 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Module 1: Payload Mutation Defense */}
-        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
-          <div className="space-y-1.5">
+        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between gap-6 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale box-border">
+          <div className="space-y-2">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-[#FF4D5A]">
                 ZERO-TRUST CRYPTOGRAPHIC GUARD
@@ -1474,8 +1474,8 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         </div>
 
         {/* Module 2: Cryptographic Merkle Audit Chain */}
-        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
-          <div className="space-y-1.5">
+        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between gap-6 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale box-border">
+          <div className="space-y-2">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-slate-400">
                 IMMUTABLE AUDIT TRAIL

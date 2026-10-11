@@ -49,49 +49,32 @@ function SidebarNavItem({ item, active, onClick }) {
     <button
       onClick={() => onClick(item.id)}
       className={`
-        group relative w-full min-w-0 flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl text-left
-        transition-all duration-200 cursor-pointer text-sm select-none overflow-hidden hover-card-scale
+        group relative w-full min-w-0 flex items-center justify-between gap-3.5 px-4 py-3.5 my-1 rounded-xl text-left
+        transition-all duration-200 cursor-pointer text-sm sm:text-base select-none overflow-hidden hover-card-scale
         ${isActive
-          ? 'bg-gradient-to-r from-[#1C2333] to-[#141A28] text-white font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_12px_rgba(0,0,0,0.4)] border border-slate-700/60'
-          : 'text-slate-400 hover:text-slate-100 hover:bg-[#121624]/90 hover:border-slate-800 border border-transparent'
+          ? 'bg-red-500/10 text-white font-semibold border-l-4 border-[#EF233C] shadow-[0_0_18px_rgba(239,35,60,0.18)] pl-3.5'
+          : 'text-slate-300 font-medium hover:text-white hover:bg-slate-800/60 border-l-4 border-transparent pl-3.5'
         }
       `}
     >
-      {/* Active Left Glowing Accent Indicator */}
-      {isActive && (
-        <span
-          className="absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full"
-          style={{
-            background: 'linear-gradient(180deg, #FF2D37 0%, #EF233C 100%)',
-            boxShadow: '0 0 12px #EF233C, 0 0 4px #FF2D37',
-          }}
-        />
-      )}
-
-      {/* Left Icon and Label Wrapper */}
       <div className="flex items-center gap-3.5 min-w-0 flex-1">
         <Icon
-          size={20}
-          className={`shrink-0 transition-all duration-200 ${
-            isActive
-              ? 'text-[#EF233C] drop-shadow-[0_0_8px_rgba(239,35,60,0.5)]'
-              : 'text-slate-400 group-hover:text-slate-200 group-hover:scale-105'
+          size={22}
+          className={`shrink-0 transition-colors ${
+            isActive ? 'text-[#EF233C]' : 'text-slate-400 group-hover:text-red-400'
           }`}
         />
-
-        <span className="truncate tracking-wide leading-none">
-          {item.label}
-        </span>
+        <span className="truncate tracking-wide font-medium">{item.label}</span>
       </div>
 
-      {/* Far-Right Neatly Aligned Pill Badge (e.g. 23, 6) */}
+      {/* Pill Badge (e.g. 23, 6) */}
       {item.badge !== undefined && (
         <span
-          className="ml-auto shrink-0 relative z-10 inline-flex items-center justify-center min-w-[24px] h-[22px] px-2 rounded-full text-[11px] leading-none font-bold font-mono tabular-nums select-none shadow-sm"
+          className="ml-auto shrink-0 relative z-10 inline-flex items-center justify-center min-w-[26px] h-6 px-2 rounded-full text-xs leading-none font-bold font-mono tabular-nums select-none shadow-sm"
           style={{
-            backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.22)' : 'rgba(30, 41, 59, 0.7)',
+            backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.22)' : '#192030',
             color: item.badgeColor === '#FF4D4D' ? '#FF5C6E' : '#94A3B8',
-            border: item.badgeColor === '#FF4D4D' ? '1px solid rgba(239, 35, 60, 0.45)' : '1px solid rgba(51, 65, 85, 0.8)',
+            border: item.badgeColor === '#FF4D4D' ? '1px solid rgba(239, 35, 60, 0.45)' : '1px solid #28334A',
             boxShadow: item.badgeColor === '#FF4D4D' ? '0 0 10px rgba(239, 35, 60, 0.25)' : 'none',
           }}
         >
@@ -117,16 +100,16 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
         <aside
           className={`shrink-0 flex flex-col border-r bg-[#0A0D15]/90 backdrop-blur-xl z-20 transition-all duration-300 ease-in-out overflow-hidden ${
             sidebarOpen
-              ? 'w-64 opacity-100 border-slate-800/80 pointer-events-auto visible'
+              ? 'w-72 opacity-100 border-slate-800/80 pointer-events-auto visible'
               : 'w-0 opacity-0 border-transparent pointer-events-none invisible'
           }`}
           style={{
-            minWidth: sidebarOpen ? '16rem' : '0px',
-            maxWidth: sidebarOpen ? '16rem' : '0px',
+            minWidth: sidebarOpen ? '18rem' : '0px',
+            maxWidth: sidebarOpen ? '18rem' : '0px',
           }}
         >
           {/* Inner wrapper with fixed width so contents do not squish during slide transition */}
-          <div className="w-64 flex flex-col h-full min-h-0">
+          <div className="w-72 flex flex-col h-full min-h-0">
             {/* Logo Header */}
             <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -146,7 +129,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
             </div>
 
             {/* Navigation Items */}
-            <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto scrollbar-none">
+            <nav className="flex-1 px-3.5 py-4 space-y-2 overflow-y-auto scrollbar-none">
               {NAV_ITEMS.map((item) => (
                 <SidebarNavItem
                   key={item.id}
@@ -175,16 +158,16 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
         </aside>
 
         {/* ── Main Content Area ────────────────────────────────────────── */}
-        <div className="flex-1 w-full min-w-0 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-in-out">
+        <div className="flex-1 w-full min-w-0 max-w-full flex flex-col h-screen overflow-x-hidden overflow-y-hidden box-border transition-all duration-300 ease-in-out">
           {/* Top Header Bar */}
-          <header className="h-16 shrink-0 px-8 border-b border-slate-800/80 bg-[#0A0D15]/75 backdrop-blur-md flex items-center justify-between z-20">
+          <header className="h-16 shrink-0 px-8 sm:px-10 lg:px-12 border-b border-slate-800/80 bg-[#0A0D15]/85 backdrop-blur-md flex items-center justify-between z-20 box-border">
             {/* Left: Sidebar Toggle + View Title & Subtitle */}
             <div className="flex items-center gap-4 min-w-0">
               <button
                 onClick={() => setSidebarOpen((v) => !v)}
                 title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                 aria-label="Toggle sidebar"
-                className="shrink-0 p-2.5 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-600 hover:bg-[#151B29] transition-all cursor-pointer hover-card-scale"
+                className="shrink-0 p-2.5 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-600 hover:bg-[#151B29] transition-all cursor-pointer hover-card-scale shadow-sm"
               >
                 <Menu size={20} />
               </button>
@@ -326,12 +309,12 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
           </header>
 
           {/* Main Content Body */}
-          <main className="flex-1 overflow-y-auto px-8 py-6 relative z-10 scrollbar-thin scrollbar-thumb-slate-800">
+          <main className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden px-8 sm:px-10 lg:px-12 py-6 relative z-10 scrollbar-thin scrollbar-thumb-slate-800 box-border">
             {children}
           </main>
 
           {/* Bottom Status Footer */}
-          <footer className="h-8 shrink-0 px-8 border-t border-slate-800/80 bg-[#090C12]/95 backdrop-blur-md flex items-center justify-between text-[11px] font-mono text-slate-400 z-20">
+          <footer className="h-8 shrink-0 px-8 sm:px-10 lg:px-12 border-t border-slate-800/80 bg-[#090C12]/95 backdrop-blur-md flex items-center justify-between text-[11px] font-mono text-slate-400 z-20 box-border">
             <div className="flex items-center gap-2 font-semibold text-slate-300">
               <Shield size={12} className="text-[#EF233C]" />
               <span>ActionGate Security Layer</span>

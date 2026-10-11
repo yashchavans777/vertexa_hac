@@ -25,7 +25,8 @@ export default function SimulateActionFab({
   policies = [],
   isOpen: externalIsOpen,
   onToggle,
-  onActionIntercepted
+  onActionIntercepted,
+  onNavigate
 }) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -46,8 +47,17 @@ export default function SimulateActionFab({
   );
 
   // Extract all target tools covered by active REQUIRE_APPROVAL policies
-  const availableTools = approvalPolicies.flatMap((p) => p.targetTools || []);
-  const defaultTool = availableTools[0] || 'resize_cluster';
+  const extractedTools = approvalPolicies.flatMap((p) => p.targetTools || []);
+  const standardPresets = ['scale_workers', 'execute_command', 'resize_cluster', 'target tool'];
+  
+  // Deduplicate and combine extracted tools with standard fallback tools
+  const availableTools = Array.from(
+    new Set([
+      ...extractedTools.map(t => String(t).trim()).filter(Boolean),
+      ...standardPresets
+    ])
+  );
+  const defaultTool = availableTools[0] || 'scale_workers';
 
   const [selectedTool, setSelectedTool] = useState(defaultTool);
   const [agentId, setAgentId] = useState('agent_devops_v1');
@@ -187,13 +197,24 @@ export default function SimulateActionFab({
                   <X size={14} />
                 </button>
               </div>
-              <p className="text-slate-300 text-[11px] mt-1 leading-relaxed">
-                {toastAlert.message}
-              </p>
-              <div className="mt-2 text-[10px] text-amber-400/90 flex items-center gap-1 font-bold">
-                <span>GATEWAY DECISION: HELD_FOR_APPROVAL</span>
-                <span>·</span>
-                <span className="underline cursor-pointer">View in Live Queue →</span>
+              <div className="mt-2.5 text-[10px] text-amber-400/90 flex items-center justify-between font-bold pt-1 border-t border-amber-500/20">
+                <span className="tracking-wider">GATEWAY DECISION: HELD_FOR_APPROVAL</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onNavigate) {
+                      onNavigate('queue');
+                    } else {
+                      window.dispatchEvent(new CustomEvent('actiongate:navigate', { detail: 'queue' }));
+                    }
+                    setToastAlert(null);
+                  }}
+                  className="pointer-events-auto inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-white border border-amber-500/40 transition-all cursor-pointer font-mono font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)] active:scale-95"
+                >
+                  <span>View in Live Queue</span>
+                  <ArrowRight size={11} className="transition-transform group-hover:translate-x-0.5" />
+                </button>
               </div>
             </div>
           </motion.div>
@@ -238,27 +259,17 @@ export default function SimulateActionFab({
                 <label className="text-[10px] uppercase tracking-wider text-slate-400 block">
                   Simulated Target Tool (Rule Trigger)
                 </label>
-                {availableTools.length > 0 ? (
-                  <select
-                    value={selectedTool}
-                    onChange={(e) => setSelectedTool(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B12] border border-amber-500/30 text-amber-300 font-bold focus:outline-none focus:border-amber-400 cursor-pointer"
-                  >
-                    {availableTools.map((tool, idx) => (
-                      <option key={idx} value={tool} className="bg-[#080B12] text-white">
-                        {tool} (Requires Approval)
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    value={selectedTool}
-                    onChange={(e) => setSelectedTool(e.target.value)}
-                    placeholder="e.g. resize_cluster"
-                    className="w-full px-3 py-2 rounded-xl bg-[#080B12] border border-slate-700 text-white focus:outline-none focus:border-cyan-400"
-                  />
-                )}
+                <select
+                  value={selectedTool}
+                  onChange={(e) => setSelectedTool(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#080B12] border border-amber-500/30 text-amber-300 font-bold focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  {availableTools.map((tool, idx) => (
+                    <option key={idx} value={tool} className="bg-[#080B12] text-white">
+                      {tool} (Requires Approval)
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Agent Identity */}

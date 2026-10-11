@@ -93,7 +93,7 @@ export const ActionCard = ({ action, onDecision, isProcessing = false }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}
       transition={{ type: "spring", stiffness: 350, damping: 25 }}
-      className={`relative overflow-hidden rounded-2xl border bg-slate-900/60 backdrop-blur-xl transition-all duration-300 hover-card-scale ${
+      className={`relative overflow-hidden rounded-2xl border bg-slate-900/60 backdrop-blur-xl transition-all duration-300 hover-card-scale box-border ${
         isModified 
           ? 'border-cyan-500/40 shadow-[0_0_25px_rgba(6,182,212,0.15)]' 
           : 'border-slate-800/80 hover:border-slate-700/80 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)]'
@@ -109,37 +109,57 @@ export const ActionCard = ({ action, onDecision, isProcessing = false }) => {
         }`} 
       />
 
-      <div className="p-5 md:p-6 space-y-5">
+      <div className="p-6 sm:p-7 space-y-5 box-border">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1.5 min-w-[200px]">
-            <div className="flex items-center gap-2">
+            {/* Explicit Action ID & Intercept Status */}
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
-              <h3 className="font-mono text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-cyan-400" />
-                {action.toolName || action.tool || 'system:execute'}
-              </h3>
+              <span className="px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 tracking-wider">
+                ID: {action.actionId || action._id || 'UNKNOWN_ID'}
+              </span>
+              <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold uppercase tracking-wider bg-amber-950/50 text-amber-300 border border-amber-500/30">
+                HELD FOR APPROVAL
+              </span>
+            </div>
+
+            {/* Target Tool Header */}
+            <div className="flex items-center gap-2 pt-1">
+              <Terminal className="w-5 h-5 text-cyan-400 shrink-0" />
+              <div>
+                <span className="text-[10px] uppercase font-mono text-slate-400 block -mb-0.5">Target Tool</span>
+                <h3 className="font-mono text-lg font-bold tracking-tight text-white">
+                  {action.toolName || action.tool || 'system:execute'}
+                </h3>
+              </div>
             </div>
             
-            <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-              <span className="flex items-center gap-1.5 bg-slate-800/70 px-2 py-0.5 rounded border border-slate-700/50">
-                <Cpu className="w-3.5 h-3.5 text-slate-400" />
-                {action.agentId || 'agent-unknown'}
+            {/* Calling Agent & Timestamp */}
+            <div className="flex items-center gap-3 text-xs font-mono text-slate-400 pt-1">
+              <span className="flex items-center gap-1.5 bg-slate-800/70 px-2.5 py-1 rounded-md border border-slate-700/50 text-slate-200">
+                <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-slate-400 text-[10px]">Agent:</span>
+                <span className="font-bold text-cyan-200">{action.agentId || 'autonomous_agent'}</span>
               </span>
-              <span className="flex items-center gap-1 text-slate-500">
-                <Clock className="w-3 h-3" />
-                {action.timestamp ? new Date(action.timestamp).toLocaleTimeString() : 'Pending'}
+              <span className="flex items-center gap-1 text-slate-400">
+                <Clock className="w-3.5 h-3.5 text-slate-500" />
+                {action.timestamp ? new Date(action.timestamp).toLocaleTimeString() : 'Pending Review'}
               </span>
             </div>
           </div>
 
-          <div className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border ${riskConfig.bg} ${riskConfig.border} ${riskConfig.glow}`}>
-            <span className={`h-2 w-2 rounded-full ${riskConfig.indicatorBg} animate-pulse`} />
-            <span className="text-xs font-semibold tracking-wider font-mono uppercase text-slate-300">
-              {riskConfig.label}
-            </span>
-            <span className={`text-base font-extrabold font-mono ${riskConfig.text}`}>
-              {action.riskScore ?? 0}/100
-            </span>
+          {/* Risk Score Gauge */}
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">Risk Assessment</span>
+            <div className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl border ${riskConfig.bg} ${riskConfig.border} ${riskConfig.glow}`}>
+              <span className={`h-2 w-2 rounded-full ${riskConfig.indicatorBg} animate-pulse`} />
+              <span className="text-xs font-semibold tracking-wider font-mono uppercase text-slate-300">
+                {riskConfig.label}
+              </span>
+              <span className={`text-base font-extrabold font-mono ${riskConfig.text}`}>
+                {action.riskScore ?? 0}/100
+              </span>
+            </div>
           </div>
         </div>
 
@@ -200,25 +220,25 @@ export const ActionCard = ({ action, onDecision, isProcessing = false }) => {
             Reset Payload
           </button>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => executeDecision('REJECTED')}
               disabled={isProcessing}
-              className="group relative flex items-center gap-2 rounded-lg bg-[#F01616] hover:bg-[#d01313] px-4 py-2 text-xs font-mono font-semibold text-white shadow-lg shadow-[#F01616]/40 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#F01616] to-[#b30e0e] hover:from-[#ff2d2d] hover:to-[#c71212] px-5 py-2.5 text-xs font-mono font-bold text-white shadow-lg shadow-[#F01616]/30 hover:shadow-[#F01616]/60 border border-[#ff4d4d]/40 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <XCircle className="w-4 h-4 text-white/90 transition-transform group-hover:scale-110" />
-              <span>Reject Action</span>
+              <XCircle className="w-4 h-4 text-white transition-transform group-hover:rotate-90 duration-200" />
+              <span>REJECT ACTION</span>
             </button>
 
             <button
               type="button"
               onClick={() => executeDecision('APPROVED')}
               disabled={Boolean(jsonError) || isProcessing}
-              className="group relative flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-5 py-2 text-xs font-mono font-semibold text-white shadow-lg shadow-emerald-950/60 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:via-teal-500 hover:to-emerald-400 px-6 py-2.5 text-xs font-mono font-bold text-white shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/60 border border-emerald-400/40 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200 transition-transform group-hover:scale-110" />
-              <span>Approve Action</span>
+              <CheckCircle2 className="w-4 h-4 text-white transition-transform group-hover:scale-110 duration-200" />
+              <span>APPROVE ACTION</span>
             </button>
           </div>
         </div>
