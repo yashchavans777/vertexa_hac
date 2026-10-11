@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * ActionGate - Higher-Order Async Handler
  * src/utils/asyncHandler.js
@@ -10,6 +11,8 @@
  * @param {Function} requestHandler - Asynchronous Express middleware/controller function
  * @returns {Function} Express middleware that resolves the Promise or forwards error to next()
  */
+=======
+>>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
 const asyncHandler = (requestHandler) => {
   return (req, res, next) => {
     Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));

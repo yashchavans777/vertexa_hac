@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * ActionGate - Gateway Route Definitions
  * routes/gatewayRoutes.js
@@ -92,5 +93,16 @@ router.get(
   verifyHumanAdmin,
   getDashboardMetrics
 );
+=======
+const express = require('express');
+const router = express.Router();
+const gatewayController = require('../controllers/gatewayController');
+
+// Step 2: Evaluate incoming action request
+router.post('/evaluate', gatewayController.evaluateAction);
+
+// Step 3: Human Approval workflow
+router.post('/approve', gatewayController.approveAction);
+>>>>>>> 970158768f8a72e810a75a43418f02a55dd1d995
 
 module.exports = router;
