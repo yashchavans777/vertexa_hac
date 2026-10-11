@@ -102,7 +102,9 @@ const evaluateAction = asyncHandler(async (req, res) => {
     riskAnalysis
   );
 
-  const { effect, decisionReason, decisionPath } = policyOutcome;
+  const effect = policyOutcome?.effect || 'REQUIRE_APPROVAL';
+  const decisionReason = policyOutcome?.decisionReason || `Policy evaluated with effect ${effect} for tool ${toolName}.`;
+  const decisionPath = policyOutcome?.decisionPath || `Matched ${effect} policy for ${toolName}`;
 
   // Map policy engine effect to ledger finalDecision enum
   let finalDecision = 'BLOCKED';

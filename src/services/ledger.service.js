@@ -45,6 +45,9 @@ async function appendBlock(blockData, retryCount = 0) {
     const previousHash = latestBlock ? latestBlock.currentHash : GENESIS_PREVIOUS_HASH;
     const blockTimestamp = blockData.timestamp ? new Date(blockData.timestamp) : new Date();
     const nonce = blockData.nonce || 0;
+    const resolvedDecisionPath =
+      blockData.decisionPath ||
+      `Matched ${blockData.finalDecision || 'REQUIRE_APPROVAL'} policy for ${blockData.toolName || 'tool'}`;
 
     // 2. Deterministically compute currentHash over block properties
     const currentHash = calculateBlockHash({
@@ -52,7 +55,7 @@ async function appendBlock(blockData, retryCount = 0) {
       previousHash,
       payload: blockData.payload,
       finalDecision: blockData.finalDecision,
-      decisionPath: blockData.decisionPath,
+      decisionPath: resolvedDecisionPath,
       timestamp: blockTimestamp,
       nonce
     });
@@ -67,7 +70,7 @@ async function appendBlock(blockData, retryCount = 0) {
       toolName: blockData.toolName || 'UNKNOWN_TOOL',
       payload: blockData.payload || {},
       finalDecision: blockData.finalDecision,
-      decisionPath: blockData.decisionPath,
+      decisionPath: resolvedDecisionPath,
       decisionReason: blockData.decisionReason || 'Decision recorded in audit ledger',
       nonce,
       currentHash

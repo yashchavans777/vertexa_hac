@@ -58,11 +58,8 @@ const auditLedgerSchema = new mongoose.Schema(
     },
     decisionPath: {
       type: String,
-      enum: {
-        values: ['AI_INFORMED_ENGINE', 'FAILOVER_SAFE_MODE', 'HUMAN_ADMIN_ACTION', 'STRICT_POLICY_DENY'],
-        message: '{VALUE} is not a valid decision path'
-      },
-      required: [true, 'Decision path is required']
+      required: [true, 'Decision path is required'],
+      trim: true
     },
     decisionReason: {
       type: String,
