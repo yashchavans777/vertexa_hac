@@ -10,6 +10,7 @@ import {
   Clock,
   ChevronRight,
   BarChart2,
+  Zap,
 } from 'lucide-react';
 
 /* ── Navigation items ─────────────────────────────────────────── */
@@ -17,8 +18,8 @@ const NAV_ITEMS = [
   { id: 'queue',      label: 'Live Queue',             icon: Activity,    accent: '#00F5FF' },
   { id: 'ledger',     label: 'Cryptographic Ledger',   icon: BookLock,    accent: '#00E676' },
   { id: 'policies',   label: 'Policy Engine',          icon: ShieldCheck, accent: '#FFB800' },
-  { id: 'adversarial',label: 'Adversarial Benchmarks', icon: Swords,      accent: '#FF2D55' },
-  { id: 'analytics',  label: 'Threat Analytics',       icon: BarChart2,   accent: '#F01616' },
+  { id: 'analytics',  label: 'Threat Analytics',       icon: BarChart2,   accent: '#00F5FF' },
+  { id: 'chaos',      label: 'Chaos Lab',              icon: Zap,         accent: '#F01616' },
 ];
 
 /* ── Real-time digital clock ──────────────────────────────────── */

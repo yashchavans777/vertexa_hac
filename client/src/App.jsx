@@ -2,19 +2,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CyberShell from './components/CyberShell';
 import ExecutiveAnalytics from './components/ExecutiveAnalytics';
 import PolicyManager from './components/PolicyManager';
+import ChaosLab from './components/ChaosLab';
 
 /* ─── View Registry ──────────────────────────────────────────── */
-// Maps nav IDs from CyberShell to their rendered views.
+// Maps navigation IDs from CyberShell to their respective components
 const VIEWS = {
   analytics: <ExecutiveAnalytics />,
   policies: <PolicyManager />,
+  chaos: <ChaosLab />,
+  adversarial: <ChaosLab />,
 };
 
-/* ─── Awaiting Placeholder (default for unbuilt views) ──────── */
+/* ─── Awaiting Placeholder (for pending views) ───────────────── */
 function AwaitingPlaceholder({ viewId }) {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6">
-      {/* Spinning rings */}
       <div className="relative flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
@@ -55,7 +57,6 @@ function AwaitingPlaceholder({ viewId }) {
         </p>
       </div>
 
-      {/* Scan bar */}
       <div className="w-64 h-px overflow-hidden rounded-full" style={{ background: 'var(--border-subtle)' }}>
         <motion.div
           className="h-full rounded-full"
@@ -68,7 +69,7 @@ function AwaitingPlaceholder({ viewId }) {
   );
 }
 
-/* ─── App ────────────────────────────────────────────────────── */
+/* ─── Main Application ───────────────────────────────────────── */
 export default function App() {
   return (
     <CyberShell>
