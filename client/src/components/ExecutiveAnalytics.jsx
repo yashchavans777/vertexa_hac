@@ -735,12 +735,12 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               INTERCEPTED ACTIONS (24H)
             </span>
-            <Zap size={15} className="text-[#EF233C]" />
+            <Zap size={15} className="text-emerald-400" />
           </div>
 
           <div className="my-3">
@@ -754,20 +754,36 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               <Activity size={13} />
               <span>+18.4% agent action volume</span>
             </div>
-            <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+            <svg className="w-full h-9 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="metric1-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10B981" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="metric1-line" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#059669" />
+                  <stop offset="50%" stopColor="#10B981" />
+                  <stop offset="100%" stopColor="#34D399" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 18 Q 20 22, 40 14 T 70 8 T 100 12 L 100 24 L 0 24 Z"
+                fill="url(#metric1-area)"
+              />
               <path
                 d="M 0 18 Q 20 22, 40 14 T 70 8 T 100 12"
                 fill="none"
-                stroke="#10B981"
+                stroke="url(#metric1-line)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
+                style={{ filter: 'drop-shadow(0px 2px 6px rgba(16, 185, 129, 0.45))' }}
               />
             </svg>
           </div>
         </div>
 
         {/* Metric 2 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-amber-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               HUMAN PENDING QUEUE
@@ -786,55 +802,87 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               <Clock size={13} />
               <span>Average decision time: 38s</span>
             </div>
-            <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+            <svg className="w-full h-9 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="metric2-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="metric2-line" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#D97706" />
+                  <stop offset="50%" stopColor="#F59E0B" />
+                  <stop offset="100%" stopColor="#FCD34D" />
+                </linearGradient>
+              </defs>
               <path
-                d="M 0 12 Q 25 6, 50 18 T 80 10 T 100 16"
+                d="M 0 12 Q 25 5, 50 17 T 75 9 T 100 15 L 100 24 L 0 24 Z"
+                fill="url(#metric2-area)"
+              />
+              <path
+                d="M 0 12 Q 25 5, 50 17 T 75 9 T 100 15"
                 fill="none"
-                stroke="#F59E0B"
+                stroke="url(#metric2-line)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
+                style={{ filter: 'drop-shadow(0px 2px 6px rgba(245, 158, 11, 0.45))' }}
               />
             </svg>
           </div>
         </div>
 
         {/* Metric 3 */}
-        <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(239,35,60,0.18)] hover-card-scale">
+        <div className="rounded-2xl border border-blue-500/40 bg-[#0B1528]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(59,130,246,0.18)] hover-card-scale hover:border-blue-400/60 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest text-[#FF4D5A] uppercase font-bold">
+            <span className="text-[10px] font-mono tracking-widest text-blue-400 uppercase font-bold">
               ANOMALIES DEFLECTED
             </span>
-            <AlertTriangle size={15} className="text-[#EF233C]" />
+            <AlertTriangle size={15} className="text-blue-400" />
           </div>
 
           <div className="my-3">
             <div
-              className="text-3xl sm:text-4xl font-mono font-black text-[#EF233C] tracking-tight"
-              style={{ textShadow: '0 0 25px rgba(239, 35, 60, 0.7)' }}
+              className="text-3xl sm:text-4xl font-mono font-black text-blue-400 tracking-tight"
+              style={{ textShadow: '0 0 25px rgba(59, 130, 246, 0.7)' }}
             >
               {312 + streamActions.filter((s) => s.status === 'BLOCKED_QUARANTINED').length}
             </div>
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-1 text-xs font-mono text-[#FF5C6E]">
-              <Ban size={13} />
+            <div className="flex items-center gap-1 text-xs font-mono text-blue-300">
+              <Ban size={13} className="text-blue-400" />
               <span>Prompt injections & exfiltration halts</span>
             </div>
-            <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+            <svg className="w-full h-9 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="metric3-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.38" />
+                  <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="metric3-line" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#2563EB" />
+                  <stop offset="50%" stopColor="#3B82F6" />
+                  <stop offset="100%" stopColor="#60A5FA" />
+                </linearGradient>
+              </defs>
               <path
-                d="M 0 20 Q 20 22, 40 18 T 65 4 T 80 20 T 100 8"
+                d="M 0 20 Q 20 23, 40 16 T 65 6 T 80 18 T 100 8 L 100 24 L 0 24 Z"
+                fill="url(#metric3-area)"
+              />
+              <path
+                d="M 0 20 Q 20 23, 40 16 T 65 6 T 80 18 T 100 8"
                 fill="none"
-                stroke="#EF233C"
+                stroke="url(#metric3-line)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
+                style={{ filter: 'drop-shadow(0px 2px 7px rgba(59, 130, 246, 0.6))' }}
               />
             </svg>
           </div>
         </div>
 
         {/* Metric 4 */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale">
+        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl hover-card-scale hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-bold">
               CRYPTOGRAPHIC INTEGRITY
@@ -853,8 +901,30 @@ export default function ExecutiveAnalytics({ onNavigate }) {
               <CheckCircle2 size={13} />
               <span>Audit Chain Verified (SHA-256)</span>
             </div>
-            <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
-              <line x1="0" y1="14" x2="100" y2="14" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" />
+            <svg className="w-full h-9 overflow-visible" viewBox="0 0 100 24" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="metric4-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="metric4-line" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#059669" />
+                  <stop offset="50%" stopColor="#10B981" />
+                  <stop offset="100%" stopColor="#34D399" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 14 C 20 12, 35 15, 50 13 C 65 11, 80 15, 100 13 L 100 24 L 0 24 Z"
+                fill="url(#metric4-area)"
+              />
+              <path
+                d="M 0 14 C 20 12, 35 15, 50 13 C 65 11, 80 15, 100 13"
+                fill="none"
+                stroke="url(#metric4-line)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                style={{ filter: 'drop-shadow(0px 2px 6px rgba(16, 185, 129, 0.45))' }}
+              />
             </svg>
           </div>
         </div>
