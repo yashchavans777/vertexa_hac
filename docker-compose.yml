@@ -1,0 +1,101 @@
+# ==============================================================================
+# ActionGate - Orchestration Stack
+# docker-compose.yml
+#
+# Principal DevOps & Security Engineer Specification:
+# Composes the complete ActionGate hackathon architecture:
+# - mongodb: Persistent document datastore
+# - ai-analyzer: Python FastAPI ML risk evaluation engine
+# - api-gateway: Node.js Express policy & gateway ingress
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. MongoDB Datastore
+  # ----------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7.0-jammy
+    container_name: actiongate-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017" # Exposed to host for Compass, tests, and debugging
+    environment:
+      - MONGO_INITDB_DATABASE=actiongate
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - actiongate-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # 2. Python FastAPI AI Risk Analyzer
+  # ----------------------------------------------------------------------------
+  ai-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: actiongate-ai-analyzer
+    restart: unless-stopped
+    ports:
+      - "8000:8000" # Exposed to host for simulator scripts & swagger UI
+    environment:
+      - PORT=8000
+      - ENVIRONMENT=production
+    networks:
+      - actiongate-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # 3. Node.js Express Gateway
+  # ----------------------------------------------------------------------------
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: actiongate-api-gateway
+    restart: unless-stopped
+    ports:
+      - "5000:5000" # Exposed to host for React SOC Dashboard & Agent Ingress
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/actiongate
+      - AI_ANALYZER_URL=http://ai-analyzer:8000/analyze
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      ai-analyzer:
+        condition: service_started
+    networks:
+      - actiongate-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/gateway/metrics"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+# ------------------------------------------------------------------------------
+# Bridge Network & Persistent Volumes
+# ------------------------------------------------------------------------------
+networks:
+  actiongate-network:
+    driver: bridge
+    name: actiongate-network
+
+volumes:
+  mongo_data:
+    name: actiongate_mongo_data

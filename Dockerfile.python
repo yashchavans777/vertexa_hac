@@ -1,0 +1,55 @@
+# ==============================================================================
+# ActionGate - Python FastAPI Risk Analyzer Container
+# Dockerfile.python
+#
+# Principal DevOps & Security Engineer Specification:
+# Lightweight, hardened Python 3.11-slim container running Uvicorn.
+# Enforces non-root execution, minimal footprint, and zero cache persistence.
+# ==============================================================================
+
+FROM python:3.11-slim AS runner
+
+# Labels for OCI compliance and auditability
+LABEL org.opencontainers.image.title="ActionGate AI Risk Analyzer" \
+      org.opencontainers.image.description="FastAPI Machine Learning Inference & Simulator Engine" \
+      org.opencontainers.image.vendor="ActionGate Security"
+
+# Security: Prevent Python from writing .pyc files and enable unbuffered logging
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+WORKDIR /app
+
+# Install system dependencies needed for curl health check and build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create dedicated non-root application user
+RUN groupadd -r appgroup && useradd -r -g appgroup -s /sbin/nologin -d /app appuser
+
+# Copy requirements specification first to leverage Docker layer caching
+COPY requirements.txt ./
+
+# Install Python dependencies without storing wheels in pip cache
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application source code
+COPY . /app
+
+# Set file ownership to non-root appuser
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-privileged user
+USER appuser
+
+# Expose internal FastAPI listening port
+EXPOSE 8000
+
+# Health check to ensure Uvicorn process is responsive
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/docs || exit 1
+
+# Launch production Uvicorn server (pointing to main.py / app instance)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
