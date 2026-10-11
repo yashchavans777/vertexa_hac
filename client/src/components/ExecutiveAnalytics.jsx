@@ -28,6 +28,7 @@ import {
   Loader2,
   Flame,
   FileCode2,
+  Copy,
 } from 'lucide-react';
 import api from '../services/api';
 import socketService from '../services/socket.service';
@@ -47,6 +48,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('ALL');
   const [processingId, setProcessingId] = useState(null);
+  const [copiedUrl, setCopiedUrl] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
   /* ── Real Ledger Blocks State ───────────────────────────────── */
@@ -1189,20 +1191,20 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           <span className="text-[11px] font-mono tracking-[0.25em] text-[#FF4D5A] uppercase font-bold">
             SYSTEMIC GOVERNANCE
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             AI Analyzes. Policy Decides. Humans Govern.
           </h2>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            Humans retain deterministic sovereignty over high-impact agency. No AI model is permitted direct database or infrastructure execution without signed policy clearance.
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Deterministic sovereignty ensuring no model executes destructive operations without cryptographic clearance.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           {/* Pillar 1 */}
-          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5 hover-card-scale">
+          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-cyan-400">
-                <Bot size={20} />
+              <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-cyan-400 shadow-md">
+                <Bot size={22} />
               </div>
               <div>
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase font-bold">
@@ -1212,21 +1214,17 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                   AI Analyzes & Plans
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Foundation models propose actions based on prompts, tools, and vector embeddings. The agent believes it is triggering execution.
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Autonomous models synthesize prompts and propose actions within an isolated sandbox.
               </p>
-            </div>
-            <div className="pt-4 border-t border-slate-800/70 flex items-center justify-between text-[11px] font-mono text-slate-500">
-              <span>Agent Sandboxing</span>
-              <span className="text-slate-400">RFC-9421</span>
             </div>
           </div>
 
           {/* Pillar 2: Featured Deterministic Gate */}
-          <div className="rounded-2xl border border-[#EF233C]/50 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] space-y-5 hover-card-scale">
+          <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] transition-all duration-300 hover:scale-[1.02] hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/20">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_15px_rgba(239,35,60,0.5)]">
-                <Shield size={20} className="fill-white/20" />
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_15px_rgba(239,35,60,0.5)]">
+                <Shield size={22} className="fill-white/20" />
               </div>
               <div>
                 <span className="text-[10px] font-mono tracking-widest text-[#FF4D5A] uppercase font-bold">
@@ -1236,21 +1234,17 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                   Policy Evaluates
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                ActionGate intercepts the outbound request prior to wire egress. Static assertions, behavioral bounds, and zero-trust policies evaluate payload safety.
+              <p className="text-sm text-gray-400 leading-relaxed">
+                ActionGate intercepts raw runtime tool-calls in under 12ms to enforce zero-trust bounds.
               </p>
-            </div>
-            <div className="pt-4 border-t border-slate-800/70 flex items-center justify-between text-[11px] font-mono text-[#FF5C6E]">
-              <span>Zero Latency Loss</span>
-              <span className="font-bold">p99 &lt; 12ms</span>
             </div>
           </div>
 
           {/* Pillar 3 */}
-          <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl space-y-5 hover-card-scale">
+          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-emerald-400">
-                <Lock size={20} />
+              <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-emerald-400 shadow-md">
+                <Lock size={22} />
               </div>
               <div>
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase font-bold">
@@ -1260,13 +1254,9 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                   Humans Approve Impact
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Financial disbursements, security downgrades, and production alterations require cryptographic HMAC human authorization.
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Critical disbursements and infrastructure changes require signed cryptographic human authorization.
               </p>
-            </div>
-            <div className="pt-4 border-t border-slate-800/70 flex items-center justify-between text-[11px] font-mono text-slate-500">
-              <span>Signed Attestation</span>
-              <span className="text-slate-400">mTLS / Dual-Key</span>
             </div>
           </div>
         </div>
@@ -1279,8 +1269,8 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Module 1: Payload Mutation Defense */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6 hover-card-scale">
-          <div className="space-y-2">
+        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-[#FF4D5A]">
                 ZERO-TRUST CRYPTOGRAPHIC GUARD
@@ -1292,15 +1282,15 @@ export default function ExecutiveAnalytics({ onNavigate }) {
             <h3 className="text-xl font-bold text-white tracking-tight">
               Payload Mutation Defense
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Simulate a Man-in-the-Middle (MITM) or agent prompt injection modifying the target URL after authorization signature has been generated.
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Real-time demonstration of cryptographic signature invalidation when a target URL is tampered with in-flight.
             </p>
           </div>
 
           {/* Interactive Simulation Area */}
-          <div className="rounded-xl bg-[#080B12] border border-slate-800/90 p-4 space-y-4 font-mono text-xs">
+          <div className="rounded-xl bg-[#080B12] border border-slate-800/90 p-4 space-y-3 font-mono text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Target Destination:</span>
+              <span className="text-slate-400 text-[11px]">Destination URL:</span>
               <button
                 onClick={() => {
                   const nextMutated = !isMutated;
@@ -1311,128 +1301,133 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                     showNotification('Endpoint Restored', 'Valid destination matched HMAC digest.');
                   }
                 }}
-                className={`px-3 py-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
                   isMutated
                     ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/50'
-                    : 'bg-[#EF233C]/20 border-[#EF233C]/50 text-[#FF4D5A] hover:bg-[#EF233C]/30 shadow-[0_0_10px_rgba(239,35,60,0.3)]'
+                    : 'bg-[#EF233C]/20 border-[#EF233C]/50 text-[#FF4D5A] hover:bg-[#EF233C]/30 shadow-[0_0_12px_rgba(239,35,60,0.3)]'
                 }`}
               >
-                {isMutated ? '↺ Reset to Valid Endpoint' : '⚡ Click to Mutate Endpoint'}
+                {isMutated ? '↺ Restore Clean URL' : '⚡ Simulate Tampering'}
               </button>
             </div>
 
-            {/* Endpoint Display Box */}
-            <div className="p-3 rounded-lg bg-[#04060A] border border-slate-800 flex items-center justify-between">
-              <span className={isMutated ? 'text-[#FF4D5A] line-through' : 'text-emerald-400'}>
+            {/* Clean Code Block with Copy Button */}
+            <div className="relative group rounded-lg bg-[#04060A] border border-slate-800/90 p-3 flex items-center justify-between gap-3 overflow-hidden">
+              <code className={`text-xs truncate font-mono flex-1 ${isMutated ? 'text-[#FF4D5A] line-through' : 'text-emerald-400'}`}>
                 {isMutated ? 'https://attacker-exfil.xyz/v1/intercepted-tokens' : 'https://api.stripe.com/v1/refunds'}
-              </span>
-              <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                  isMutated
-                    ? 'bg-[#EF233C]/20 text-[#FF4D5A] border border-[#EF233C]/40 animate-pulse'
-                    : 'bg-emerald-950/40 text-emerald-400 border border-emerald-500/30'
-                }`}
-              >
-                {isMutated ? 'TAMPERED / MUTATED' : 'UNTOUCHED'}
-              </span>
+              </code>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                    isMutated
+                      ? 'bg-[#EF233C]/20 text-[#FF4D5A] border border-[#EF233C]/40 animate-pulse'
+                      : 'bg-emerald-950/40 text-emerald-400 border border-emerald-500/30'
+                  }`}
+                >
+                  {isMutated ? 'TAMPERED' : 'SECURE'}
+                </span>
+
+                <button
+                  onClick={() => {
+                    const text = isMutated ? 'https://attacker-exfil.xyz/v1/intercepted-tokens' : 'https://api.stripe.com/v1/refunds';
+                    navigator.clipboard?.writeText(text);
+                    setCopiedUrl(true);
+                    setTimeout(() => setCopiedUrl(false), 2000);
+                  }}
+                  title="Copy destination URL"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 transition-colors cursor-pointer"
+                >
+                  {copiedUrl ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                </button>
+              </div>
             </div>
 
             {/* HMAC Hash Status */}
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-slate-400">HMAC Hash Status:</span>
+            <div className="flex items-center justify-between pt-0.5">
+              <span className="text-slate-400 text-[11px]">HMAC Integrity:</span>
               <span
                 className={`text-xs font-bold ${
                   isMutated ? 'text-[#EF233C] animate-pulse' : 'text-emerald-400'
                 }`}
               >
-                {isMutated ? 'INVALID (Cryptographic Signature Compromised)' : 'VALID (Signature Match)'}
+                {isMutated ? 'REVOKED (Signature Mismatch)' : 'VALID (Signed HMAC Match)'}
               </span>
             </div>
-          </div>
-
-          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-2 border-t border-slate-800/70">
-            <span className="flex items-center gap-1.5 text-slate-400">
-              <Lock size={12} className="text-[#EF233C]" />
-              <span>Cryptographic Enforcement Policy</span>
-            </span>
-            <span className="text-slate-300 font-bold">STRICT_SHA256_REVOKE</span>
           </div>
         </div>
 
         {/* Module 2: Cryptographic Merkle Audit Chain */}
-        <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-6 hover-card-scale">
-          <div className="space-y-2">
+        <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between gap-5 transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between font-mono">
               <span className="text-[10px] tracking-widest uppercase font-bold text-slate-400">
-                IMMUTABLE LEDGER
+                IMMUTABLE AUDIT TRAIL
               </span>
               <button
                 onClick={handleVerifyLedger}
                 disabled={verifyingLedger}
-                className="flex items-center gap-1.5 text-[11px] text-[#FF4D5A] hover:text-[#ff6b77] transition-colors cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 text-xs text-[#FF4D5A] hover:text-[#ff6b77] transition-colors cursor-pointer disabled:opacity-50"
               >
                 <RefreshCw size={12} className={verifyingLedger ? 'animate-spin' : ''} />
                 <span>
                   {verifyingLedger
-                    ? 'Verifying Proofs...'
+                    ? 'Verifying...'
                     : ledgerVerified === true
-                    ? 'Proofs Verified ✓'
+                    ? 'Verified ✓'
                     : ledgerVerified === false
-                    ? 'Verification Alert ✕'
-                    : 'Verify Ledger Proofs'}
+                    ? 'Alert ✕'
+                    : 'Verify Ledger'}
                 </span>
               </button>
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">
               Cryptographic Merkle Audit Chain
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Every authorized action and quarantine seal is permanently etched into an immutable SHA-256 Merkle chain, providing zero-trust forensic proof.
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Every authorization decision is permanently sealed into a forward-chained SHA-256 historical ledger.
             </p>
           </div>
 
-          {/* Blocks Sequence */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+          {/* Blocks Sequence — Aligned Pill-Style Status Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
             {ledgerBlocks.slice(0, 4).map((blk, idx) => {
-              const hashSnippet = blk.currentHash ? `${blk.currentHash.slice(0, 6)}...${blk.currentHash.slice(-4)}` : '0x7F2a...9801';
+              const hashSnippet = blk.currentHash ? `${blk.currentHash.slice(0, 5)}..${blk.currentHash.slice(-3)}` : '0x7F..98';
               const isHead = idx === 0;
 
               return (
                 <div
                   key={blk.index || idx}
-                  className={`p-3 rounded-xl border space-y-1.5 hover-card-scale ${
+                  className={`p-3 rounded-xl border flex flex-col justify-between gap-2 transition-all ${
                     isHead
-                      ? 'bg-[#14080B] border-[#EF233C]/40 shadow-[0_0_12px_rgba(239,35,60,0.2)]'
-                      : 'bg-[#080B12] border-slate-800'
+                      ? 'bg-[#15090C] border-[#EF233C]/50 shadow-[0_0_14px_rgba(239,35,60,0.25)]'
+                      : 'bg-[#080B12] border-slate-800/80 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className={isHead ? 'text-[#FF4D5A] font-bold' : 'text-slate-400'}>
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[11px] font-bold ${isHead ? 'text-[#FF4D5A]' : 'text-slate-300'}`}>
                       BLOCK #{blk.index ?? (9842 + idx)}
                     </span>
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isHead ? 'bg-[#EF233C] animate-pulse' : 'bg-emerald-400'
+                      className={`w-2 h-2 rounded-full ${
+                        isHead ? 'bg-[#EF233C] animate-pulse shadow-[0_0_6px_#EF233C]' : 'bg-emerald-400 shadow-[0_0_6px_#10B981]'
                       }`}
                     />
                   </div>
-                  <div className="text-white font-bold text-xs truncate">{hashSnippet}</div>
-                  <div className={`text-[10px] ${isHead ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {blk.payloadCount ?? (idx * 5 + 4)} Actions Sealed
+                  <div className="text-white font-mono font-bold text-xs truncate">{hashSnippet}</div>
+                  <div className="text-[10px] text-slate-500">
+                    {blk.payloadCount ?? (idx * 5 + 4)} sealed
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-2 border-t border-slate-800/70">
-            <span className="text-emerald-400 flex items-center gap-1.5">
-              <CheckCircle2 size={12} />
-              <span>
-                {ledgerVerifyReport?.message || 'SHA-256 Merkle Root Integrity Validated'}
-              </span>
+          <div className="flex items-center justify-between text-xs font-mono pt-1 text-emerald-400">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 size={13} />
+              <span>{ledgerVerifyReport?.message || 'SHA-256 Merkle Root Verified'}</span>
             </span>
-            <span className="text-slate-400">Compact Tree v2</span>
           </div>
         </div>
       </div>

@@ -48,42 +48,50 @@ function SidebarNavItem({ item, active, onClick }) {
     <button
       onClick={() => onClick(item.id)}
       className={`
-        group relative w-full min-w-0 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left
-        transition-all duration-150 cursor-pointer font-medium text-xs select-none overflow-hidden hover-card-scale
+        group relative w-full min-w-0 flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl text-left
+        transition-all duration-200 cursor-pointer text-sm select-none overflow-hidden hover-card-scale
         ${isActive
-          ? 'bg-[#181D2A] text-white font-semibold shadow-inner'
-          : 'text-slate-400 hover:text-slate-200 hover:bg-[#131722]/80'
+          ? 'bg-gradient-to-r from-[#1C2333] to-[#141A28] text-white font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_12px_rgba(0,0,0,0.4)] border border-slate-700/60'
+          : 'text-slate-400 hover:text-slate-100 hover:bg-[#121624]/90 hover:border-slate-800 border border-transparent'
         }
       `}
     >
-      {/* Active Left Indicator */}
+      {/* Active Left Glowing Accent Indicator */}
       {isActive && (
         <span
-          className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full"
+          className="absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full"
           style={{
-            background: '#EF233C',
-            boxShadow: '0 0 10px #EF233C',
+            background: 'linear-gradient(180deg, #FF2D37 0%, #EF233C 100%)',
+            boxShadow: '0 0 12px #EF233C, 0 0 4px #FF2D37',
           }}
         />
       )}
 
-      <Icon
-        size={17}
-        className={`shrink-0 transition-colors ${
-          isActive ? 'text-[#EF233C]' : 'text-slate-400 group-hover:text-slate-200'
-        }`}
-      />
+      {/* Left Icon and Label Wrapper */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+        <Icon
+          size={20}
+          className={`shrink-0 transition-all duration-200 ${
+            isActive
+              ? 'text-[#EF233C] drop-shadow-[0_0_8px_rgba(239,35,60,0.5)]'
+              : 'text-slate-400 group-hover:text-slate-200 group-hover:scale-105'
+          }`}
+        />
 
-      <span className="min-w-0 flex-1 truncate tracking-wide">{item.label}</span>
+        <span className="truncate tracking-wide leading-none">
+          {item.label}
+        </span>
+      </div>
 
-      {/* Pill Badge (e.g. 23, 6) — fixed-size pill, inline at row end, always safely contained */}
+      {/* Far-Right Neatly Aligned Pill Badge (e.g. 23, 6) */}
       {item.badge !== undefined && (
         <span
-          className="ml-auto shrink-0 relative z-10 inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-[10px] leading-none font-bold font-mono tabular-nums select-none"
+          className="ml-auto shrink-0 relative z-10 inline-flex items-center justify-center min-w-[24px] h-[22px] px-2 rounded-full text-[11px] leading-none font-bold font-mono tabular-nums select-none shadow-sm"
           style={{
-            backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.2)' : '#192030',
+            backgroundColor: item.badgeColor === '#FF4D4D' ? 'rgba(239, 35, 60, 0.22)' : 'rgba(30, 41, 59, 0.7)',
             color: item.badgeColor === '#FF4D4D' ? '#FF5C6E' : '#94A3B8',
-            border: item.badgeColor === '#FF4D4D' ? '1px solid rgba(239, 35, 60, 0.4)' : '1px solid #28334A',
+            border: item.badgeColor === '#FF4D4D' ? '1px solid rgba(239, 35, 60, 0.45)' : '1px solid rgba(51, 65, 85, 0.8)',
+            boxShadow: item.badgeColor === '#FF4D4D' ? '0 0 10px rgba(239, 35, 60, 0.25)' : 'none',
           }}
         >
           {item.badge}
@@ -137,7 +145,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
             </div>
 
             {/* Navigation Items */}
-            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto scrollbar-none">
               {NAV_ITEMS.map((item) => (
                 <SidebarNavItem
                   key={item.id}
