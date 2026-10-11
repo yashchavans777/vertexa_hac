@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ExternalLink,
   Flame,
+  Menu,
 } from 'lucide-react';
 import CosmicThreatBackground from './CosmicThreatBackground';
 
@@ -27,6 +28,15 @@ const NAV_ITEMS = [
   { id: 'policies',  label: 'Policies',        icon: Sliders },
   { id: 'ledger',    label: 'Audit Trail',     icon: Lock },
   { id: 'chaos',     label: 'Chaos Lab',       icon: Flame },
+];
+
+/* ── Notification feed for the bell dropdown (pending count derives from NAV_ITEMS) ── */
+const PENDING_APPROVALS = NAV_ITEMS.find((i) => i.id === 'approvals')?.badge ?? 0;
+const CONNECTED_AGENTS = NAV_ITEMS.find((i) => i.id === 'agents')?.badge ?? 0;
+const NOTIFICATIONS = [
+  { id: 1, tone: 'critical', time: 'now', title: `${PENDING_APPROVALS} actions awaiting approval`, detail: 'Human sign-off required in the Approval Queue.' },
+  { id: 2, tone: 'ok', time: '2m', title: `${CONNECTED_AGENTS} agents connected`, detail: 'All agents operating under zero-trust authorization bounds.' },
+  { id: 3, tone: 'ok', time: '8m', title: 'Audit chain verified', detail: 'SHA-256 forward-chaining integrity proof passed.' },
 ];
 
 /* ── Sidebar NavItem Component ────────────────────────────────── */
@@ -85,6 +95,8 @@ function SidebarNavItem({ item, active, onClick }) {
 
 export default function CyberShell({ children, activeTab = 'overview', onTabChange }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <div className="relative min-h-screen w-full bg-[#080A10] text-slate-100 font-sans flex flex-col overflow-hidden selection:bg-[#EF233C]/30 selection:text-white">
@@ -93,7 +105,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
 
       <div className="relative z-10 flex flex-1 h-screen overflow-hidden">
         {/* ── Left Sidebar (verbatim Image 2) ────────────────────────── */}
-        <aside className="w-64 shrink-0 flex flex-col border-r border-slate-800/80 bg-[#0A0D15]/90 backdrop-blur-xl z-20">
+        <aside className={`w-64 shrink-0 flex flex-col border-r bg-[#0A0D15]/90 backdrop-blur-xl z-20 transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-0 opacity-100 border-slate-800/80' : '-ml-64 opacity-0 border-transparent'}`}>
           {/* Logo Header */}
           <div className="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -170,29 +182,40 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
         <div className="flex-1 flex flex-col h-screen overflow-hidden">
           {/* Top Header Bar */}
           <header className="h-16 shrink-0 px-8 border-b border-slate-800/80 bg-[#0A0D15]/75 backdrop-blur-md flex items-center justify-between z-20">
-            {/* Left: View Title & Subtitle */}
-            <div className="flex flex-col min-w-0">
-              <h2 className="text-base font-extrabold text-white tracking-tight leading-tight">
-                {activeTab === 'overview' && 'Security Overview'}
-                {activeTab === 'queue' && 'Live Actions Queue'}
-                {activeTab === 'approvals' && 'Human Approval Queue'}
-                {activeTab === 'agents' && 'Connected Autonomous Agents'}
-                {activeTab === 'policies' && 'Policy Engine & Guardrails'}
-                {activeTab === 'ledger' && 'Cryptographic Audit Trail'}
-                {activeTab === 'chaos' && 'Chaos & Adversarial Lab'}
-              </h2>
-              <p className="text-xs text-slate-400 truncate">
-                {activeTab === 'overview' && 'Monitor and authorize autonomous AI actions in real time.'}
-                {activeTab === 'queue' && 'Real-time telemetry stream of agent intents undergoing gateway inspection.'}
-                {activeTab === 'approvals' && 'High-impact payloads requiring cryptographic human-in-the-loop sign-off.'}
-                {activeTab === 'agents' && 'Autonomous agents registered under zero-trust authorization bounds.'}
-                {activeTab === 'policies' && 'Define deterministic invariants, allowed tools, and threshold limits.'}
-                {activeTab === 'ledger' && 'Immutable SHA-256 Merkle chain with verifiable forensic integrity proofs.'}
-                {activeTab === 'chaos' && 'Simulate MITM tampering, malicious prompt injections, and failover.'}
-              </p>
+            {/* Left: Sidebar Toggle + View Title & Subtitle */}
+            <div className="flex items-center gap-4 min-w-0">
+              <button
+                onClick={() => setSidebarOpen((v) => !v)}
+                title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                aria-label="Toggle sidebar"
+                className="shrink-0 p-2.5 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-600 hover:bg-[#151B29] transition-all cursor-pointer"
+              >
+                <Menu size={20} />
+              </button>
+
+              <div className="flex flex-col min-w-0">
+                <h2 className="text-base font-extrabold text-white tracking-tight leading-tight">
+                  {activeTab === 'overview' && 'Security Overview'}
+                  {activeTab === 'queue' && 'Live Actions Queue'}
+                  {activeTab === 'approvals' && 'Human Approval Queue'}
+                  {activeTab === 'agents' && 'Connected Autonomous Agents'}
+                  {activeTab === 'policies' && 'Policy Engine & Guardrails'}
+                  {activeTab === 'ledger' && 'Cryptographic Audit Trail'}
+                  {activeTab === 'chaos' && 'Chaos & Adversarial Lab'}
+                </h2>
+                <p className="text-xs text-slate-400 truncate">
+                  {activeTab === 'overview' && 'Monitor and authorize autonomous AI actions in real time.'}
+                  {activeTab === 'queue' && 'Real-time telemetry stream of agent intents undergoing gateway inspection.'}
+                  {activeTab === 'approvals' && 'High-impact payloads requiring cryptographic human-in-the-loop sign-off.'}
+                  {activeTab === 'agents' && 'Autonomous agents registered under zero-trust authorization bounds.'}
+                  {activeTab === 'policies' && 'Define deterministic invariants, allowed tools, and threshold limits.'}
+                  {activeTab === 'ledger' && 'Immutable SHA-256 Merkle chain with verifiable forensic integrity proofs.'}
+                  {activeTab === 'chaos' && 'Simulate MITM tampering, malicious prompt injections, and failover.'}
+                </p>
+              </div>
             </div>
 
-            {/* Right: Search, Status, Notification, Avatar */}
+            {/* Right: Search, Status, Notifications */}
             <div className="flex items-center gap-4 flex-1 min-w-0 justify-end ml-8">
               {/* Search Bar with ⌘K — grows to fill free header width for prominence */}
               <div className="relative flex items-center flex-1 min-w-0 max-w-lg">
@@ -217,21 +240,82 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                 </span>
               </div>
 
-              {/* Notification Bell */}
-              <button
-                className="relative shrink-0 p-2 rounded-xl text-slate-300 hover:text-white bg-[#111624] border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
-                title="Notifications"
-              >
-                <Bell size={15} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EF233C] ring-2 ring-[#0A0D15]" />
-              </button>
+              {/* Notification Bell with dropdown panel */}
+              <div className="relative shrink-0">
+                <button
+                  onClick={() => setShowNotifications((v) => !v)}
+                  aria-label="Notifications"
+                  aria-expanded={showNotifications}
+                  title="Notifications"
+                  className={`relative p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    showNotifications
+                      ? 'text-white bg-[#181D2A] border-[#EF233C]/60 shadow-[0_0_14px_rgba(239,35,60,0.35)]'
+                      : 'text-slate-300 hover:text-white bg-[#111624] border-slate-800 hover:border-slate-600 hover:bg-[#151B29]'
+                  }`}
+                >
+                  <Bell size={20} />
+                  <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-[#EF233C] ring-2 ring-[#0A0D15] animate-pulse" />
+                </button>
 
-              {/* Top User Avatar */}
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                alt="Elena Vance"
-                className="shrink-0 w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800 cursor-pointer"
-              />
+                <AnimatePresence>
+                  {showNotifications && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
+                      className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-[#0D111C]/95 backdrop-blur-xl border border-slate-700/70 shadow-[0_18px_50px_rgba(0,0,0,0.6)] overflow-hidden z-40"
+                    >
+                      <div className="px-4 py-3 border-b border-slate-800/80 flex items-center justify-between">
+                        <span className="text-xs font-bold text-white tracking-wide">Notifications</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#EF233C]/15 text-[#FF5C6E] border border-[#EF233C]/30">
+                          {NOTIFICATIONS.length} NEW
+                        </span>
+                      </div>
+
+                      <div className="max-h-72 overflow-y-auto">
+                        {NOTIFICATIONS.map((n) => (
+                          <div
+                            key={n.id}
+                            className="px-4 py-3 border-b border-slate-800/50 last:border-b-0 hover:bg-[#141A28]/80 transition-colors cursor-pointer flex items-start gap-3"
+                          >
+                            <span
+                              className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${
+                                n.tone === 'critical'
+                                  ? 'bg-[#EF233C] shadow-[0_0_8px_#EF233C]'
+                                  : 'bg-emerald-400 shadow-[0_0_8px_#10B981]'
+                              }`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-semibold text-white leading-snug">{n.title}</p>
+                              <p className="text-[11px] text-slate-400 leading-snug mt-0.5">{n.detail}</p>
+                            </div>
+                            <span className="text-[10px] font-mono text-slate-500 shrink-0">{n.time}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setShowNotifications(false);
+                          onTabChange('approvals');
+                        }}
+                        className="w-full px-4 py-2.5 text-[11px] font-mono font-bold tracking-wider text-[#FF5C6E] hover:text-white hover:bg-[#EF233C]/10 border-t border-slate-800/80 transition-colors cursor-pointer"
+                      >
+                        VIEW APPROVAL QUEUE →
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Invisible click-catcher: closes the dropdown when clicking anywhere else */}
+              {showNotifications && (
+                <div
+                  className="fixed inset-0 z-30 cursor-default"
+                  onClick={() => setShowNotifications(false)}
+                />
+              )}
             </div>
           </header>
 

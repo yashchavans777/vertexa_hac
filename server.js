@@ -4,7 +4,7 @@ const app = require('./src/app');
 
 // Dynamic port configuration: env-overridable, with automatic fallback
 // to the next port if the preferred one is already in use (EADDRINUSE).
-const BASE_PORT = Number.parseInt(process.env.PORT, 10) || 5001;
+const BASE_PORT = Number.parseInt(process.env.PORT, 10) || 5002;
 const MAX_PORT_ATTEMPTS = 5;
 
 function listenOn(port, attemptsLeft) {

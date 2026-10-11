@@ -15,13 +15,13 @@ const app = require("./app");
  * 3. Attach Socket.IO for real-time telemetry streaming to SOC frontend.
  * 4. Fail fast and exit if database connection fails.
  * 5. Bind dynamically: preferred port comes from the environment
- *    (PORT in .env, fallback 5001). If the port is busy (EADDRINUSE)
+ *    (PORT in .env, fallback 5002). If the port is busy (EADDRINUSE)
  *    the server automatically retries on the next port instead of crashing.
  */
 
 // Preferred port — fully configurable via environment variables.
-const BASE_PORT = Number.parseInt(process.env.PORT, 10) || 5001;
-const MAX_PORT_ATTEMPTS = 5; // tries PORT, PORT+1, PORT+2, ... (e.g. 5001 → 5002 → ...)
+const BASE_PORT = Number.parseInt(process.env.PORT, 10) || 5002;
+const MAX_PORT_ATTEMPTS = 5; // tries PORT, PORT+1, PORT+2, ... (e.g. 5002 → 5003 → ...)
 
 let activeServer = null;
 

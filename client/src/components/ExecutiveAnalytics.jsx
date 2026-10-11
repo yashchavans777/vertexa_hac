@@ -683,7 +683,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 Deterministic HMAC Validated
               </span>
-              <span className="text-slate-500">GATEWAY PORT: 5001</span>
+              <span className="text-slate-500">GATEWAY PORT: 5002</span>
             </div>
           </motion.div>
         </div>
