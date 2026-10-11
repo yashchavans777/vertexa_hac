@@ -1094,51 +1094,56 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           SECTION 4: SIMULATE ACTION PANEL (GATEWAY TEST RIG)
       ───────────────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-slate-800/80 bg-[#0C101A]/85 backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 font-mono">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-              <h3 className="text-lg font-bold text-white tracking-tight">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee]" />
+              <h3 className="text-lg font-bold text-white tracking-tight font-mono">
                 Simulate Action Gateway Console
               </h3>
             </div>
-            <p className="text-xs text-slate-400 mt-1 font-sans">
+            <p className="text-xs text-slate-400 mt-1 max-w-xl font-sans">
               Inject synthetic autonomous agent tool-calls directly into the ActionGate policy engine to verify real-time interception and human-in-the-loop workflows.
             </p>
           </div>
 
-          {/* Quick Presets */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] text-slate-500 mr-1">Presets:</span>
+          {/* Quick Presets - Horizontal neat row */}
+          <div className="flex items-center gap-2.5 shrink-0 overflow-x-auto py-1">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold mr-1">
+              Presets:
+            </span>
             <button
               onClick={() => applyPreset('safe')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold transition-all duration-200 cursor-pointer ${
                 simPreset === 'safe'
-                  ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-emerald-500/20 border border-emerald-500/60 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)] ring-1 ring-emerald-500/30'
+                  : 'bg-emerald-950/30 border border-emerald-800/40 text-emerald-400 hover:bg-emerald-900/40 hover:border-emerald-500/50 hover:text-emerald-200'
               }`}
             >
-              Safe Query (Auto-Pass)
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_4px_#34d399]" />
+              <span>Safe Query (Auto-Pass)</span>
             </button>
             <button
               onClick={() => applyPreset('held')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold transition-all duration-200 cursor-pointer ${
                 simPreset === 'held'
-                  ? 'bg-amber-950/60 border-amber-500/50 text-amber-300'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-500/20 border border-amber-500/60 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)] ring-1 ring-amber-500/30'
+                  : 'bg-amber-950/30 border border-amber-800/40 text-amber-400 hover:bg-amber-900/40 hover:border-amber-500/50 hover:text-amber-200'
               }`}
             >
-              $15k Transfer (Held)
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_4px_#fbbf24]" />
+              <span>$15k Transfer (Held)</span>
             </button>
             <button
               onClick={() => applyPreset('blocked')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold transition-all duration-200 cursor-pointer ${
                 simPreset === 'blocked'
-                  ? 'bg-rose-950/60 border-rose-500/50 text-rose-300'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-rose-500/20 border border-rose-500/60 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)] ring-1 ring-rose-500/30'
+                  : 'bg-rose-950/30 border border-rose-800/40 text-rose-400 hover:bg-rose-900/40 hover:border-rose-500/50 hover:text-rose-200'
               }`}
             >
-              DROP TABLE (Blocked)
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_4px_#f43f5e]" />
+              <span>DROP TABLE (Blocked)</span>
             </button>
           </div>
         </div>
@@ -1146,66 +1151,104 @@ export default function ExecutiveAnalytics({ onNavigate }) {
         {/* Console Inputs Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-mono text-xs">
           {/* Left Inputs */}
-          <div className="lg:col-span-5 space-y-4">
-            <div>
-              <label className="text-[11px] text-slate-400 mb-1.5 block">Agent Identifier (Caller)</label>
-              <input
-                type="text"
-                value={simAgentId}
-                onChange={(e) => setSimAgentId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B12] border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500/50 font-mono"
-              />
-            </div>
+          <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div>
+                <label className="text-[11px] font-mono tracking-wider uppercase font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>Agent Identifier (Caller)</span>
+                  <span className="text-[10px] text-slate-500 font-normal">agent_id</span>
+                </label>
+                <input
+                  type="text"
+                  value={simAgentId}
+                  onChange={(e) => setSimAgentId(e.target.value)}
+                  placeholder="e.g. autonomous-finance-v4"
+                  className="w-full p-3 rounded-xl bg-[#090D16] border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono shadow-inner"
+                />
+              </div>
 
-            <div>
-              <label className="text-[11px] text-slate-400 mb-1.5 block">Tool / Function Name</label>
-              <input
-                type="text"
-                value={simToolName}
-                onChange={(e) => setSimToolName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B12] border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500/50 font-mono"
-              />
-            </div>
+              <div>
+                <label className="text-[11px] font-mono tracking-wider uppercase font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>Tool / Function Name</span>
+                  <span className="text-[10px] text-slate-500 font-normal">rpc_method</span>
+                </label>
+                <input
+                  type="text"
+                  value={simToolName}
+                  onChange={(e) => setSimToolName(e.target.value)}
+                  placeholder="e.g. execute_disbursement"
+                  className="w-full p-3 rounded-xl bg-[#090D16] border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono shadow-inner"
+                />
+              </div>
 
-            <div>
-              <label className="text-[11px] text-slate-400 mb-1.5 block">Raw Agent Prompt / Context</label>
-              <textarea
-                rows={3}
-                value={simPrompt}
-                onChange={(e) => setSimPrompt(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B12] border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500/50 font-mono resize-none"
-              />
+              <div>
+                <label className="text-[11px] font-mono tracking-wider uppercase font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>Raw Agent Prompt / Context</span>
+                  <span className="text-[10px] text-slate-500 font-normal">nlp_context</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={simPrompt}
+                  onChange={(e) => setSimPrompt(e.target.value)}
+                  placeholder="Context provided to autonomous agent..."
+                  className="w-full p-3 rounded-xl bg-[#090D16] border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all font-mono resize-none shadow-inner"
+                />
+              </div>
             </div>
           </div>
 
           {/* Right Inputs: JSON Payload and Dispatch */}
           <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <FileCode2 size={13} className="text-cyan-400" />
-                  <span>Action Arguments Payload (JSON)</span>
-                </label>
-                <span className="text-[10px] text-slate-500">Validated with HMAC-SHA256</span>
+            <div className="flex flex-col flex-1">
+              {/* Code Editor Container */}
+              <div className="rounded-xl border border-slate-700/80 bg-[#070A12]/95 backdrop-blur-md overflow-hidden shadow-2xl flex flex-col flex-1 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
+                {/* Editor Header Bar */}
+                <div className="px-4 py-2.5 bg-[#0D121F] border-b border-slate-800 flex items-center justify-between select-none">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                    </div>
+                    <span className="h-3 w-px bg-slate-800 mx-1" />
+                    <span className="text-[11px] font-mono text-cyan-400 font-semibold flex items-center gap-1.5">
+                      <FileCode2 size={13} />
+                      Action Arguments Payload (JSON)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                      HMAC-SHA256
+                    </span>
+                  </div>
+                </div>
+
+                {/* Editor Code Area */}
+                <div className="relative p-3 flex-1 flex">
+                  <textarea
+                    rows={8}
+                    value={simPayload}
+                    onChange={(e) => setSimPayload(e.target.value)}
+                    spellCheck={false}
+                    className="w-full h-full min-h-[170px] bg-transparent text-cyan-200 placeholder-slate-600 focus:outline-none font-mono text-xs leading-relaxed resize-none selection:bg-blue-600/30"
+                  />
+                </div>
               </div>
-              <textarea
-                rows={7}
-                value={simPayload}
-                onChange={(e) => setSimPayload(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#080B12] border border-slate-800 text-cyan-200 focus:outline-none focus:border-cyan-500/50 font-mono"
-              />
             </div>
 
-            {/* Bottom Dispatch Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-              <div className="text-[11px] text-slate-400 font-mono">
-                Target Endpoint: <span className="text-cyan-400">POST /api/v1/gateway/evaluate</span>
+            {/* Bottom Dispatch Controls Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/60 mt-auto">
+              <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                <span className="text-slate-500">Target Endpoint:</span>
+                <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-400 font-bold">
+                  POST /api/v1/gateway/evaluate
+                </span>
               </div>
 
               <button
                 onClick={handleDispatchSimulation}
                 disabled={isSimulating}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs font-mono text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs font-mono text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all cursor-pointer disabled:opacity-50 shrink-0"
               >
                 {isSimulating ? (
                   <Loader2 size={15} className="animate-spin" />
@@ -1256,22 +1299,25 @@ export default function ExecutiveAnalytics({ onNavigate }) {
       {/* ─────────────────────────────────────────────────────────────
           SECTION 5: 3 ARCHITECTURE PILLARS
       ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-6">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
+      <div className="rounded-3xl border border-slate-800/80 bg-[#0B0F19]/60 backdrop-blur-xl py-12 px-8 flex flex-col gap-8 shadow-2xl relative overflow-hidden">
+        {/* Subtle decorative glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-[#EF233C]/5 blur-[80px] pointer-events-none rounded-full" />
+
+        <div className="relative text-center space-y-3 max-w-2xl mx-auto">
           <span className="text-[11px] font-mono tracking-[0.25em] text-[#FF4D5A] uppercase font-bold">
             SYSTEMIC GOVERNANCE
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
             AI Analyzes. Policy Decides. Humans Govern.
           </h2>
-          <p className="text-sm text-gray-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
             Deterministic sovereignty ensuring no model executes destructive operations without cryptographic clearance.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 relative z-10">
           {/* Pillar 1 */}
-          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
+          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-cyan-400 shadow-md">
                 <Bot size={22} />
@@ -1291,7 +1337,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 2: Featured Deterministic Gate */}
-          <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] transition-all duration-300 hover:scale-[1.02] hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/20">
+          <div className="rounded-2xl border border-[#EF233C]/40 bg-[#160A0E]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-[0_0_25px_rgba(239,35,60,0.15)] transition-all duration-300 hover:scale-[1.02] hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/20 hover-card-scale">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#FF2D37] to-[#B80C19] flex items-center justify-center text-white shadow-[0_0_15px_rgba(239,35,60,0.5)]">
                 <Shield size={22} className="fill-white/20" />
@@ -1311,7 +1357,7 @@ export default function ExecutiveAnalytics({ onNavigate }) {
           </div>
 
           {/* Pillar 3 */}
-          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10">
+          <div className="rounded-2xl border border-slate-800 bg-[#0C101A]/85 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10 hover-card-scale">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#141A28] border border-slate-700/80 flex items-center justify-center text-emerald-400 shadow-md">
                 <Lock size={22} />

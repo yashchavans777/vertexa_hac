@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { id: 'policies',  label: 'Policies',        icon: Sliders },
   { id: 'ledger',    label: 'Audit Trail',     icon: Lock },
   { id: 'chaos',     label: 'Chaos Lab',       icon: Flame },
+  { id: 'settings',  label: 'Settings',        icon: Settings },
 ];
 
 /* ── Notification feed for the bell dropdown (pending count derives from NAV_ITEMS) ── */
@@ -157,7 +158,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
             </nav>
 
             {/* Bottom Status Box */}
-            <div className="px-3 pb-3">
+            <div className="px-3 pb-4 pt-1">
               <div className="p-3 rounded-xl bg-[#0F131D]/90 border border-slate-800/80 shadow-inner flex flex-col gap-1 hover-card-scale">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]" />
@@ -169,32 +170,6 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                   All agent actions protected
                 </p>
               </div>
-            </div>
-
-            {/* User Profile Card */}
-            <div className="px-4 py-3 border-t border-slate-800/80 flex items-center justify-between bg-[#0A0D15] hover-card-scale">
-              <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                  alt="Elena Vance"
-                  className="w-8 h-8 rounded-full object-cover border border-slate-700/80 ring-2 ring-slate-800"
-                />
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-white leading-tight">
-                    Elena Vance
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono leading-tight">
-                    Lead SecOps / NetSec
-                  </span>
-                </div>
-              </div>
-
-              <button
-                title="Settings"
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
-              >
-                <Settings size={15} />
-              </button>
             </div>
           </div>
         </aside>
@@ -223,6 +198,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                   {activeTab === 'policies' && 'Policy Engine & Guardrails'}
                   {activeTab === 'ledger' && 'Cryptographic Audit Trail'}
                   {activeTab === 'chaos' && 'Chaos & Adversarial Lab'}
+                  {activeTab === 'settings' && 'System & Gateway Settings'}
                 </h2>
                 <p className="text-xs text-slate-400 truncate">
                   {activeTab === 'overview' && 'Monitor and authorize autonomous AI actions in real time.'}
@@ -232,6 +208,7 @@ export default function CyberShell({ children, activeTab = 'overview', onTabChan
                   {activeTab === 'policies' && 'Define deterministic invariants, allowed tools, and threshold limits.'}
                   {activeTab === 'ledger' && 'Immutable SHA-256 Merkle chain with verifiable forensic integrity proofs.'}
                   {activeTab === 'chaos' && 'Simulate MITM tampering, malicious prompt injections, and failover.'}
+                  {activeTab === 'settings' && 'Manage zero-trust gateway rules, cryptographic policies, and preferences.'}
                 </p>
               </div>
             </div>
