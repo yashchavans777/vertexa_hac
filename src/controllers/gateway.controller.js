@@ -128,17 +128,31 @@ const evaluateAction = asyncHandler(async (req, res) => {
   try {
     const io = req.app.get('io');
     if (io) {
-      io.emit('NEW_ALERT', {
+      const eventPayload = {
         actionId,
         agentId,
         toolName,
+        payload,
         finalDecision,
         decisionPath,
         decisionReason,
         blockIndex: ledgerBlock.index,
         currentHash: ledgerBlock.currentHash,
-        timestamp: ledgerBlock.timestamp
-      });
+        previousHash: ledgerBlock.previousHash,
+        timestamp: ledgerBlock.timestamp,
+        riskScore: riskAnalysis?.risk_score ?? 50
+      };
+
+      io.emit('NEW_ALERT', eventPayload);
+      io.emit('LEDGER_BLOCK_ADDED', ledgerBlock);
+
+      if (finalDecision === 'HELD_FOR_APPROVAL') {
+        io.emit('ACTION_HELD', eventPayload);
+      } else if (finalDecision === 'BLOCKED') {
+        io.emit('ACTION_BLOCKED', eventPayload);
+      } else if (finalDecision === 'ALLOWED') {
+        io.emit('ACTION_ALLOWED', eventPayload);
+      }
     }
   } catch (socketErr) {
     console.error('[ActionGate Socket Error] Non-blocking alert emission failed:', socketErr.message);
@@ -169,13 +183,45 @@ const evaluateAction = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Fetch all pending actions currently held for human authorization
+ * 
+ * @route GET /api/v1/gateway/pending
+ * @access Protected (HUMAN_ADMIN)
+ */
+const getPendingActions = asyncHandler(async (req, res) => {
+  // Find all audit ledger blocks with HELD_FOR_APPROVAL
+  const heldBlocks = await AuditLedger.find({ finalDecision: 'HELD_FOR_APPROVAL' })
+    .sort({ timestamp: -1 })
+    .lean();
+
+  // Filter out any actions that have already been resolved (REAUTHORIZED or REJECTED)
+  const resolvedActionIds = await AuditLedger.distinct('actionId', {
+    finalDecision: { $in: ['REAUTHORIZED', 'REJECTED'] }
+  });
+
+  const activeHeld = heldBlocks.filter(
+    (block) => !resolvedActionIds.includes(block.actionId)
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      activeHeld,
+      `Retrieved ${activeHeld.length} pending actions awaiting operator authorization.`
+    )
+  );
+});
+
+/**
  * Human Review / Approval Endpoint (Separation of Duties & Strict Reauthorization)
  * 
  * @route POST /api/v1/gateway/approve
  * @access Protected (HUMAN_ADMIN only)
  */
 const approveAction = asyncHandler(async (req, res) => {
-  const { actionId, approverRole, approvedPayload } = req.body || {};
+  const { actionId, decision = 'APPROVED', reason } = req.body || {};
+  const approverRole = req.headers['x-user-role'] || req.body?.approverRole || 'HUMAN_ADMIN';
+  const submittedPayload = req.body?.approvedPayload !== undefined ? req.body.approvedPayload : req.body?.editedPayload;
 
   // 1. Validation & Separation of Duties
   if (!actionId) {
@@ -196,8 +242,55 @@ const approveAction = asyncHandler(async (req, res) => {
     throw new ApiError(404, `No pending HELD_FOR_APPROVAL action found in ledger with actionId '${actionId}'.`);
   }
 
-  // 3. Strict Reauthorization Check (Deep payload integrity comparison)
-  // Ensures that what the human is approving is BIT-FOR-BIT identical to what the agent requested
+  // 3. Handle explicit Operator REJECTION
+  if (decision === 'REJECTED' || decision === 'DENIED') {
+    const rejectedBlock = await appendBlock({
+      actionId,
+      agentId: originalBlock.agentId,
+      toolName: originalBlock.toolName,
+      payload: originalBlock.payload,
+      finalDecision: 'REJECTED',
+      decisionPath: 'HUMAN_ADMIN_ACTION',
+      decisionReason: reason || 'Operator manually rejected/denied the action during human review.',
+      timestamp: new Date()
+    });
+
+    try {
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('ACTION_BLOCKED', {
+          actionId,
+          finalDecision: 'REJECTED',
+          blockIndex: rejectedBlock.index,
+          currentHash: rejectedBlock.currentHash
+        });
+      }
+    } catch (socketErr) {
+      console.error('[ActionGate Socket Error] Rejection alert emission failed:', socketErr.message);
+    }
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          actionId,
+          status: 'REJECTED',
+          finalDecision: 'REJECTED',
+          decisionPath: 'HUMAN_ADMIN_ACTION',
+          approverRole,
+          ledgerProof: {
+            blockIndex: rejectedBlock.index,
+            currentHash: rejectedBlock.currentHash,
+            previousHash: rejectedBlock.previousHash
+          }
+        },
+        "Action rejected by human administrator and sealed into ledger."
+      )
+    );
+  }
+
+  // 4. Strict Reauthorization Check (Deep payload integrity comparison)
+  const approvedPayload = submittedPayload !== undefined ? submittedPayload : originalBlock.payload;
   const isIdentical = isPayloadIdentical(approvedPayload, originalBlock.payload);
 
   if (!isIdentical) {
@@ -230,7 +323,7 @@ const approveAction = asyncHandler(async (req, res) => {
     );
   }
 
-  // 4. Payloads match perfectly: Mark EXECUTED and seal into ledger
+  // 5. Payloads match perfectly: Mark EXECUTED and seal into ledger
   const executedBlock = await appendBlock({
     actionId,
     agentId: originalBlock.agentId,
@@ -242,7 +335,7 @@ const approveAction = asyncHandler(async (req, res) => {
     timestamp: new Date()
   });
 
-  // 5. Emit real-time notification to update SOC dashboards
+  // 6. Emit real-time notification to update SOC dashboards
   try {
     const io = req.app.get('io');
     if (io) {
@@ -251,6 +344,11 @@ const approveAction = asyncHandler(async (req, res) => {
         finalDecision: 'REAUTHORIZED',
         blockIndex: executedBlock.index,
         currentHash: executedBlock.currentHash
+      });
+      io.emit('ACTION_ALLOWED', {
+        actionId,
+        finalDecision: 'REAUTHORIZED',
+        blockIndex: executedBlock.index
       });
     }
   } catch (socketErr) {
@@ -279,5 +377,6 @@ const approveAction = asyncHandler(async (req, res) => {
 
 module.exports = {
   evaluateAction,
-  approveAction
+  approveAction,
+  getPendingActions
 };

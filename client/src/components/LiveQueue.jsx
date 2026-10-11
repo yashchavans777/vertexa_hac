@@ -71,9 +71,10 @@ export const LiveQueue = () => {
       const payloadBody = {
         actionId,
         decision,
+        approvedPayload: editedPayload,
         editedPayload,
         approverRole: 'HUMAN_ADMIN',
-        notes: isPayloadModified ? 'Operator modified parameters in SOC view' : 'Operator approved original parameters'
+        reason: isPayloadModified ? 'Operator modified parameters in SOC view' : 'Operator evaluated parameters in SOC view'
       };
 
       const response = await api.post('/gateway/approve', payloadBody, {

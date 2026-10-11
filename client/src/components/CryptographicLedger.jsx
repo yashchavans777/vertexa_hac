@@ -23,8 +23,8 @@ export const CryptographicLedger = () => {
   const fetchLedger = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/ledger/blocks');
-      const blocks = response.data?.data || response.data || [];
+      const response = await api.get('/ledger');
+      const blocks = response.data?.data?.blocks || response.data?.data || response.data || [];
       setLedgerChain(Array.isArray(blocks) ? blocks : []);
     } catch (err) {
       console.error('Failed to load ledger:', err);
@@ -38,7 +38,7 @@ export const CryptographicLedger = () => {
 
     const unsubscribeBlockAdded = socketService.onLedgerBlockAdded((newBlock) => {
       setLedgerChain((prev) => {
-        const exists = prev.some((b) => (b.hash && b.hash === newBlock.hash) || (b.index === newBlock.index));
+        const exists = prev.some((b) => (b.currentHash && b.currentHash === newBlock.currentHash) || (b.index === newBlock.index));
         if (exists) return prev;
         return [newBlock, ...prev];
       });

@@ -10,8 +10,16 @@ const express = require('express');
 const router = express.Router();
 const {
   evaluateAction,
-  approveAction
+  approveAction,
+  getPendingActions
 } = require('../controllers/gateway.controller');
+
+/**
+ * @route   GET /api/v1/gateway/pending
+ * @desc    Fetch active actions held for operator authorization
+ * @access  Protected (HUMAN_ADMIN)
+ */
+router.get('/pending', getPendingActions);
 
 /**
  * @route   POST /api/v1/gateway/evaluate
