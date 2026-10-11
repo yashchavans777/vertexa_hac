@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ActionCard } from './ActionCard';
 import { 
@@ -12,8 +12,6 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import socketService from '../services/socket.service';
-
-const API_BASE_URL = 'http://localhost:5000/api/v1/gateway';
 
 export const LiveQueue = () => {
   const [pendingActions, setPendingActions] = useState([]);
@@ -31,7 +29,7 @@ export const LiveQueue = () => {
   const fetchPendingActions = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/pending`, {
+      const response = await api.get('/gateway/pending', {
         headers: {
           'x-user-role': 'HUMAN_ADMIN'
         }
@@ -78,7 +76,7 @@ export const LiveQueue = () => {
         notes: isPayloadModified ? 'Operator modified parameters in SOC view' : 'Operator approved original parameters'
       };
 
-      const response = await axios.post(`${API_BASE_URL}/approve`, payloadBody, {
+      const response = await api.post('/gateway/approve', payloadBody, {
         headers: {
           'Content-Type': 'application/json',
           'x-user-role': 'HUMAN_ADMIN'

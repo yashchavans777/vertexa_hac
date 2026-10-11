@@ -17,6 +17,8 @@ import {
   Trash2,
 } from 'lucide-react';
 
+import api from '../services/api';
+
 /* ─── Strict Color Tokens ─────────────────────────────────────── */
 const C_CHAOS_RED = '#F01616'; // Strict Constraint: rgb(240, 22, 22)
 const C_CYAN = '#00F5FF';
@@ -31,10 +33,8 @@ export default function ChaosLab() {
   const [attackLogs, setAttackLogs] = useState([]);
 
   // Endpoints
-  const GATEWAY_URL = 'http://localhost:5000/api/v1/gateway/evaluate';
   const FASTAPI_CHAOS_URL = 'http://localhost:8000/chaos/toggle-failure';
   const FASTAPI_CHAOS_FALLBACK = 'http://localhost:8000/api/v1/chaos/toggle';
-  const LEDGER_TAMPER_URL = 'http://localhost:5000/api/v1/ledger/simulate-tamper';
 
   const addLog = (title, status, detail, data = null) => {
     const newLog = {
@@ -59,7 +59,7 @@ export default function ChaosLab() {
     };
 
     try {
-      const res = await axios.post(GATEWAY_URL, payload, { timeout: 4000 });
+      const res = await api.post('/gateway/evaluate', payload, { timeout: 4000 });
       addLog(
         'SQL Injection (DROP TABLE)',
         res.data?.status || 'PROCESSED',
@@ -101,7 +101,7 @@ export default function ChaosLab() {
     };
 
     try {
-      const res = await axios.post(GATEWAY_URL, payload, { timeout: 4000 });
+      const res = await api.post('/gateway/evaluate', payload, { timeout: 4000 });
       addLog(
         'Prompt Injection (Bypass RBAC)',
         res.data?.status || 'PROCESSED',
@@ -147,7 +147,7 @@ export default function ChaosLab() {
     // Send 6 rapid-fire duplicate requests in tight loop
     const promises = Array.from({ length: 6 }).map(async (_, idx) => {
       try {
-        await axios.post(GATEWAY_URL, attackPayload, { timeout: 2500 });
+        await api.post('/gateway/evaluate', attackPayload, { timeout: 2500 });
         completedRequests++;
       } catch (err) {
         if (err.response?.status === 429) {
@@ -221,7 +221,7 @@ export default function ChaosLab() {
   const injectDatabaseTampering = async () => {
     setTamperLoading(true);
     try {
-      const res = await axios.get(LEDGER_TAMPER_URL, { timeout: 3500 });
+      const res = await api.get('/ledger/simulate-tamper', { timeout: 3500 });
       addLog(
         'Ledger Tampering Injected',
         'TAMPER_SEEDED',

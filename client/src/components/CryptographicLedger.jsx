@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LedgerBlock } from './LedgerBlock';
 import { 
@@ -14,8 +14,6 @@ import {
 } from 'lucide-react';
 import socketService from '../services/socket.service';
 
-const API_BASE_URL = 'http://localhost:5000/api/v1/ledger';
-
 export const CryptographicLedger = () => {
   const [ledgerChain, setLedgerChain] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +23,7 @@ export const CryptographicLedger = () => {
   const fetchLedger = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/blocks`);
+      const response = await api.get('/ledger/blocks');
       const blocks = response.data?.data || response.data || [];
       setLedgerChain(Array.isArray(blocks) ? blocks : []);
     } catch (err) {
@@ -53,7 +51,7 @@ export const CryptographicLedger = () => {
     setIsVerifying(true);
     setVerificationReport(null);
     try {
-      const response = await axios.get(`${API_BASE_URL}/verify`);
+      const response = await api.get('/ledger/verify');
       const report = response.data?.data || response.data || {};
       setVerificationReport(report);
     } catch (err) {

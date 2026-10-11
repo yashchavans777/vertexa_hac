@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldAlert,
@@ -100,13 +100,13 @@ export default function PolicyManager() {
   );
   const [jsonError, setJsonError] = useState('');
 
-  const API_BASE = 'http://localhost:5000/api/v1/policies';
+  const API_BASE = '/policies';
 
   // ── Fetch Policies ──────────────────────────────────────────────
   const fetchPolicies = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(API_BASE);
+      const res = await api.get(API_BASE);
       const data = res.data?.data?.policies || res.data?.data || res.data;
       if (Array.isArray(data) && data.length > 0) {
         setPolicies(data);
@@ -133,7 +133,7 @@ export default function PolicyManager() {
         prev.map((p) => (p._id === policyId ? { ...p, isActive: !p.isActive } : p))
       );
 
-      await axios.patch(`${API_BASE}/${policyId}/toggle`);
+      await api.patch(`${API_BASE}/${policyId}/toggle`);
       showFeedback('Policy state updated on gateway.', 'success');
     } catch {
       // If backend offline, keep optimistic update for demo purposes
@@ -181,7 +181,7 @@ export default function PolicyManager() {
 
     try {
       setSubmitting(true);
-      const res = await axios.post(API_BASE, newPolicyPayload);
+      const res = await api.post(API_BASE, newPolicyPayload);
       const created = res.data?.data || { ...newPolicyPayload, _id: `pol-${Date.now()}` };
       setPolicies((prev) => [created, ...prev]);
       showFeedback(`Policy "${formName}" deployed successfully!`, 'success');
