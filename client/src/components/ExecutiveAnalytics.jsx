@@ -1,446 +1,502 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  BarChart,
-  Bar,
-  Cell,
-  PieChart,
-  Pie,
-  Legend,
-} from 'recharts';
-import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, CheckCircle2, PauseCircle } from 'lucide-react';
+  ShieldAlert,
+  ShieldCheck,
+  Activity,
+  Radio,
+  Zap,
+  Lock,
+  ArrowRight,
+  Terminal,
+  CheckCircle2,
+  AlertOctagon,
+  Clock,
+  Layers,
+  FileCode,
+  Users,
+  Database,
+  ExternalLink,
+} from 'lucide-react';
 
-/* ─── Strict Color Tokens ─────────────────────────────────────── */
-const C_BLOCKED  = '#F01616';       // Strict constraint
-const C_ALLOWED  = '#00E676';
-const C_HELD     = '#FFB800';
-const C_CYAN     = '#00F5FF';
-const C_BG       = '#0B0F19';
-const C_SURFACE  = 'rgba(15,22,35,0.80)';
-const C_BORDER   = 'rgba(0,245,255,0.10)';
+/* ─── Color Tokens ─────────────────────────────────────────────── */
+const C_RED = '#F01616';        // Strict Constraint: Hex #F01616
+const C_CYAN = '#00F5FF';
+const C_AMBER = '#FFB800';
+const C_EMERALD = '#00E676';
 
-/* ─── Mock Telemetry Dataset — 24-hour time series ───────────── */
-const generateHourlyData = () => {
-  const hours = [];
-  const now = new Date();
-  for (let i = 23; i >= 0; i--) {
-    const t = new Date(now - i * 3600 * 1000);
-    const label = t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    const base = 20 + Math.round(15 * Math.sin((i / 24) * Math.PI));
-    const threat = Math.round(3 + Math.random() * 8 + (i < 4 ? 6 : 0));   // spike recent hours
-    hours.push({
-      time:    label,
-      allowed: base + Math.round(Math.random() * 8),
-      blocked: threat,
-      held:    Math.round(1 + Math.random() * 4),
-    });
-  }
-  return hours;
-};
-
-const HOURLY_DATA = generateHourlyData();
-
-/* ─── Blast Radius Distribution ──────────────────────────────── */
-const BLAST_DATA = [
-  { name: 'Low',      value: 124, color: C_ALLOWED },
-  { name: 'Medium',   value: 67,  color: C_HELD },
-  { name: 'High',     value: 38,  color: '#FF6B35' },
-  { name: 'Critical', value: 21,  color: C_BLOCKED },
-];
-
-/* ─── Aggregate KPIs ──────────────────────────────────────────── */
-const totalActions    = HOURLY_DATA.reduce((s, d) => s + d.allowed + d.blocked + d.held, 0);
-const totalBlocked    = HOURLY_DATA.reduce((s, d) => s + d.blocked, 0);
-const totalAllowed    = HOURLY_DATA.reduce((s, d) => s + d.allowed, 0);
-const totalHeld       = HOURLY_DATA.reduce((s, d) => s + d.held, 0);
-const approvalRate    = ((totalAllowed / totalActions) * 100).toFixed(1);
-
-/* ─── Stat Card Component ─────────────────────────────────────── */
-function StatCard({ icon: Icon, label, value, unit = '', color, glow = false, delay = 0 }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className="glass-panel p-5 flex flex-col gap-3 relative overflow-hidden"
-      style={{
-        borderColor: glow ? `${color}30` : C_BORDER,
-        boxShadow: glow ? `0 0 24px ${color}18, inset 0 0 24px ${color}08` : 'none',
-      }}
-    >
-      {/* Background accent blob */}
-      <div
-        className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
-        style={{ background: `${color}14` }}
-      />
-
-      <div className="flex items-center justify-between relative z-10">
-        <span className="text-[10px] tracking-[0.25em] uppercase font-medium"
-          style={{ color: 'var(--text-secondary)' }}>
-          {label}
-        </span>
-        <div
-          className="p-1.5 rounded-md"
-          style={{ background: `${color}18`, border: `1px solid ${color}30` }}
-        >
-          <Icon size={13} style={{ color }} />
-        </div>
-      </div>
-
-      <div className="relative z-10">
-        <motion.span
-          className="text-3xl font-bold font-mono tracking-tight"
-          style={{
-            color,
-            textShadow: glow ? `0 0 16px ${color}80` : `0 0 8px ${color}40`,
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: delay + 0.2 }}
-        >
-          {value}
-        </motion.span>
-        {unit && (
-          <span className="ml-1 text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
-            {unit}
-          </span>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── Custom Tooltip ──────────────────────────────────────────── */
-const CyberTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div
-      className="glass-panel px-4 py-3 text-xs font-mono"
-      style={{
-        background: C_BG,
-        border: `1px solid ${C_BORDER}`,
-        borderRadius: 8,
-        boxShadow: `0 8px 32px rgba(0,0,0,0.6)`,
-        minWidth: 160,
-      }}
-    >
-      <p className="mb-2 tracking-widest uppercase text-[9px]" style={{ color: 'var(--text-secondary)' }}>
-        {label}
-      </p>
-      {payload.map((entry) => (
-        <div key={entry.dataKey} className="flex items-center justify-between gap-4 py-0.5">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-            <span className="capitalize" style={{ color: 'var(--text-secondary)' }}>
-              {entry.dataKey}
-            </span>
-          </div>
-          <span className="font-bold" style={{ color: entry.color }}>
-            {entry.value}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-/* ─── Blast Radius Pie Tooltip ────────────────────────────────── */
-const BlastTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  const d = payload[0];
-  return (
-    <div
-      className="glass-panel px-3 py-2 text-xs font-mono"
-      style={{ background: C_BG, border: `1px solid ${C_BORDER}`, borderRadius: 8 }}
-    >
-      <span style={{ color: d.payload.color }}>{d.name}</span>
-      <span className="ml-3 font-bold" style={{ color: 'var(--text-primary)' }}>{d.value} actions</span>
-    </div>
-  );
-};
-
-/* ─── Section Header ──────────────────────────────────────────── */
-function SectionHeader({ title, subtitle }) {
-  return (
-    <div className="mb-4">
-      <h3 className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: C_CYAN }}>
-        {title}
-      </h3>
-      {subtitle && (
-        <p className="text-[10px] tracking-wider mt-0.5" style={{ color: 'var(--text-dim)' }}>
-          {subtitle}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ─── Executive Analytics Dashboard ──────────────────────────── */
 export default function ExecutiveAnalytics() {
-  return (
-    <div className="flex flex-col gap-6 h-full">
+  const [interceptStatus, setInterceptStatus] = useState('BLOCKED');
+  const [actionFeedback, setActionFeedback] = useState(null);
 
-      {/* ── Row 1: KPI Stat Cards ───────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          icon={Activity}
-          label="Total Actions Evaluated"
-          value={totalActions}
-          color={C_CYAN}
-          delay={0}
-        />
-        <StatCard
-          icon={ShieldAlert}
-          label="Threats Intercepted"
-          value={totalBlocked}
-          color={C_BLOCKED}
-          glow={true}
-          delay={0.08}
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Approval Rate"
-          value={approvalRate}
-          unit="%"
-          color={C_ALLOWED}
-          delay={0.16}
-        />
-        <StatCard
-          icon={PauseCircle}
-          label="Active Holds"
-          value={totalHeld}
-          color={C_HELD}
-          delay={0.24}
-        />
+  const triggerFeedback = (message, type = 'danger') => {
+    setActionFeedback({ message, type });
+    setTimeout(() => setActionFeedback(null), 3000);
+  };
+
+  return (
+    <div className="flex flex-col gap-6 w-full font-mono">
+      {/* ── Toast Notification ─────────────────────────────────── */}
+      <AnimatePresence>
+        {actionFeedback && (
+          <motion.div
+            initial={{ opacity: 0, y: -16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.95 }}
+            className="fixed top-6 right-8 z-50 px-4 py-2.5 rounded-lg text-xs font-mono flex items-center gap-2 border shadow-2xl backdrop-blur-xl"
+            style={{
+              background: '#0B0F19',
+              borderColor: actionFeedback.type === 'danger' ? C_RED : C_EMERALD,
+              color: actionFeedback.type === 'danger' ? '#FF6B6B' : C_EMERALD,
+              boxShadow: actionFeedback.type === 'danger' 
+                ? '0 0 24px rgba(240, 22, 22, 0.4)' 
+                : '0 0 24px rgba(0, 230, 118, 0.3)',
+            }}
+          >
+            {actionFeedback.type === 'danger' ? <ShieldAlert size={14} /> : <CheckCircle2 size={14} />}
+            <span className="font-bold tracking-wide">{actionFeedback.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── 1. Header ──────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[rgba(0,245,255,0.1)]">
+        <div>
+          <div className="flex items-center gap-2">
+            <span
+              className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest text-white uppercase"
+              style={{ background: C_RED, boxShadow: `0 0 10px ${C_RED}` }}
+            >
+              SOC COMMAND
+            </span>
+            <h1 className="text-lg font-bold tracking-[0.25em] uppercase text-white">
+              Security Overview
+            </h1>
+          </div>
+          <p className="text-xs tracking-wider text-[#64748B] mt-1">
+            Real-time telemetry, zero-trust gatekeeping, and automated cryptographic action verification.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-[rgba(0,245,255,0.2)] bg-[rgba(15,22,35,0.7)] text-xs text-[#94A3B8]">
+          <span className="relative flex h-2 w-2">
+            <span
+              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+              style={{ background: C_EMERALD }}
+            />
+            <span
+              className="relative inline-flex rounded-full h-2 w-2"
+              style={{ background: C_EMERALD }}
+            />
+          </span>
+          <span className="text-[11px] tracking-wider text-slate-300">
+            ENFORCEMENT ENGINE ACTIVE
+          </span>
+        </div>
       </div>
 
-      {/* ── Row 2: Threat Area Chart ─────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, delay: 0.3 }}
-        className="glass-panel p-5 flex flex-col"
-        style={{ minHeight: 280 }}
-      >
-        <SectionHeader
-          title="24-Hour Threat Activity Timeline"
-          subtitle="Allowed vs. Blocked actions over the last 24 hours"
-        />
+      {/* ── Middle Split: Left Hero & Right Intercept Widget ────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
-        {/* SVG gradient defs injected via recharts defs prop */}
-        <div className="flex-1" style={{ minHeight: 220 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={HOURLY_DATA} margin={{ top: 6, right: 8, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="gradAllowed" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={C_ALLOWED} stopOpacity={0.28} />
-                  <stop offset="95%" stopColor={C_ALLOWED} stopOpacity={0.02} />
-                </linearGradient>
-                <linearGradient id="gradBlocked" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={C_BLOCKED} stopOpacity={0.35} />
-                  <stop offset="95%" stopColor={C_BLOCKED} stopOpacity={0.02} />
-                </linearGradient>
-                <linearGradient id="gradHeld" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={C_HELD} stopOpacity={0.22} />
-                  <stop offset="95%" stopColor={C_HELD} stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(0,245,255,0.05)"
-                vertical={false}
-              />
-
-              <XAxis
-                dataKey="time"
-                tick={{ fill: 'var(--text-dim)', fontSize: 9, fontFamily: 'monospace' }}
-                tickLine={false}
-                axisLine={false}
-                interval={3}
-              />
-              <YAxis
-                tick={{ fill: 'var(--text-dim)', fontSize: 9, fontFamily: 'monospace' }}
-                tickLine={false}
-                axisLine={false}
-              />
-
-              <Tooltip content={<CyberTooltip />} cursor={{ stroke: `${C_CYAN}30`, strokeWidth: 1 }} />
-
-              <Area
-                type="monotone"
-                dataKey="allowed"
-                stroke={C_ALLOWED}
-                strokeWidth={1.5}
-                fill="url(#gradAllowed)"
-                dot={false}
-                activeDot={{ r: 4, fill: C_ALLOWED, strokeWidth: 0 }}
-              />
-              <Area
-                type="monotone"
-                dataKey="held"
-                stroke={C_HELD}
-                strokeWidth={1.5}
-                fill="url(#gradHeld)"
-                dot={false}
-                activeDot={{ r: 4, fill: C_HELD, strokeWidth: 0 }}
-              />
-              {/* STRICT: blocked must use exactly #F01616 */}
-              <Area
-                type="monotone"
-                dataKey="blocked"
-                stroke={C_BLOCKED}
-                strokeWidth={2}
-                fill="url(#gradBlocked)"
-                dot={false}
-                activeDot={{ r: 5, fill: C_BLOCKED, strokeWidth: 0, filter: `drop-shadow(0 0 6px ${C_BLOCKED})` }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center gap-6 mt-3 pt-3"
-          style={{ borderTop: `1px solid ${C_BORDER}` }}>
-          {[
-            { color: C_ALLOWED, label: 'Allowed' },
-            { color: C_BLOCKED, label: 'Blocked (Threats)' },
-            { color: C_HELD,    label: 'Held for Approval' },
-          ].map(({ color, label }) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="w-6 h-0.5 rounded-full" style={{ background: color }} />
-              <span className="text-[9px] tracking-wider uppercase" style={{ color: 'var(--text-secondary)' }}>
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* ── Row 3: Blast Radius Distribution ─────────────────────── */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-        {/* Pie Chart */}
+        {/* ── 2. Left Hero Section ─────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.42 }}
-          className="glass-panel p-5 flex flex-col"
-          style={{ minHeight: 280 }}
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="lg:col-span-7 glass-panel p-6 md:p-8 flex flex-col justify-between relative overflow-hidden"
+          style={{
+            background: 'var(--bg-glass)',
+            borderColor: 'var(--border-subtle)',
+          }}
         >
-          <SectionHeader
-            title="Actions by Blast Radius"
-            subtitle="Distribution of impact severity across all evaluated actions"
+          {/* Subtle Ambient Radial Glow */}
+          <div
+            className="absolute -top-16 -left-16 w-56 h-56 rounded-full blur-3xl pointer-events-none opacity-30"
+            style={{ background: C_RED }}
           />
-          <div className="flex-1" style={{ minHeight: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <defs>
-                  {BLAST_DATA.map((d) => (
-                    <radialGradient key={d.name} id={`pie-${d.name}`} cx="50%" cy="50%" r="50%">
-                      <stop offset="0%"   stopColor={d.color} stopOpacity={0.9} />
-                      <stop offset="100%" stopColor={d.color} stopOpacity={0.5} />
-                    </radialGradient>
-                  ))}
-                </defs>
-                <Pie
-                  data={BLAST_DATA}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="45%"
-                  outerRadius="70%"
-                  paddingAngle={3}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {BLAST_DATA.map((entry) => (
-                    <Cell
-                      key={entry.name}
-                      fill={`url(#pie-${entry.name})`}
-                      style={{
-                        filter: entry.color === C_BLOCKED
-                          ? `drop-shadow(0 0 8px ${C_BLOCKED})`
-                          : undefined,
-                      }}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip content={<BlastTooltip />} />
-                <Legend
-                  iconType="circle"
-                  iconSize={8}
-                  formatter={(value, entry) => (
-                    <span
-                      className="text-[10px] tracking-wider uppercase font-mono"
-                      style={{ color: entry.color }}
-                    >
-                      {value}
-                    </span>
-                  )}
-                  wrapperStyle={{ fontSize: 10 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+
+          <div className="space-y-6 relative z-10">
+            {/* Tagline */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-[rgba(0,245,255,0.2)] bg-[rgba(0,245,255,0.05)] text-[#00F5FF]">
+              <Radio size={12} className="animate-pulse" />
+              <span>ZERO-TRUST AGENT GUARDRAILS</span>
+            </div>
+
+            {/* Headline */}
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
+              Every AI action.{' '}
+              <span
+                className="font-extrabold inline-block tracking-tight"
+                style={{
+                  color: C_RED,
+                  textShadow: `0 0 14px ${C_RED}, 0 0 28px rgba(240, 22, 22, 0.65)`,
+                }}
+              >
+                Verified
+              </span>{' '}
+              before execution.
+            </h2>
+
+            <p className="text-xs md:text-sm text-[#94A3B8] leading-relaxed max-w-xl">
+              ActionGate intercepts autonomous agent tool calls in real time. Payloads are checked against declarative enterprise policies, cryptographically sealed with forward-chaining SHA-256 hashes, and gated for mandatory human approval whenever risk thresholds are breached.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <motion.button
+                whileHover={{ scale: 1.02, x: 2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => triggerFeedback('Live Gateway route engaged. Monitoring active pipeline.', 'danger')}
+                className="px-5 py-3 rounded-lg text-xs font-bold tracking-widest text-white uppercase flex items-center gap-2 transition-all cursor-pointer"
+                style={{
+                  background: C_RED,
+                  boxShadow: `0 0 20px ${C_RED}, inset 0 0 10px rgba(255, 255, 255, 0.2)`,
+                }}
+              >
+                <Zap size={14} />
+                <span>Open Live Gateway</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => triggerFeedback('Navigating to Cryptographic Audit Ledger.', 'success')}
+                className="px-5 py-3 rounded-lg text-xs font-bold tracking-widest uppercase flex items-center gap-2 border transition-all cursor-pointer text-[#00F5FF] bg-transparent"
+                style={{
+                  borderColor: 'rgba(0, 245, 255, 0.35)',
+                  boxShadow: '0 0 12px rgba(0, 245, 255, 0.1)',
+                }}
+              >
+                <Lock size={14} />
+                <span>View Audit Trail</span>
+              </motion.button>
+            </div>
+          </div>
+
+          {/* 3 Small Key Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-8 mt-6 border-t border-[rgba(0,245,255,0.1)] relative z-10">
+            <div className="p-3 rounded-lg bg-[rgba(11,15,25,0.6)] border border-[rgba(0,245,255,0.12)] space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] text-[#64748B] uppercase tracking-wider">
+                <Clock size={11} className="text-[#00F5FF]" />
+                <span>Latency SLA</span>
+              </div>
+              <div className="text-xs md:text-sm font-bold text-white tracking-wide">
+                10ms P99 Policy Gate
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-[rgba(11,15,25,0.6)] border border-[rgba(0,245,255,0.12)] space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] text-[#64748B] uppercase tracking-wider">
+                <ShieldCheck size={11} className="text-[#00E676]" />
+                <span>Non-Repudiation</span>
+              </div>
+              <div className="text-xs md:text-sm font-bold text-white tracking-wide">
+                100% Payload Integrity
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-[rgba(11,15,25,0.6)] border border-[rgba(0,245,255,0.12)] space-y-1">
+              <div className="flex items-center gap-1.5 text-[10px] text-[#64748B] uppercase tracking-wider">
+                <AlertOctagon size={11} style={{ color: C_RED }} />
+                <span>Leak Defenses</span>
+              </div>
+              <div className="text-xs md:text-sm font-bold text-white tracking-wide">
+                0 Unverified Mutations
+              </div>
+            </div>
           </div>
         </motion.div>
 
-        {/* Bar Chart: Action breakdown by category */}
+        {/* ── 3. Right Widget ("Intercept Core") ───────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.52 }}
-          className="glass-panel p-5 flex flex-col"
-          style={{ minHeight: 280 }}
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="lg:col-span-5 glass-panel rounded-xl flex flex-col justify-between relative overflow-hidden"
+          style={{
+            background: 'var(--bg-glass)',
+            borderColor: 'var(--border-subtle)',
+          }}
         >
-          <SectionHeader
-            title="Decision Distribution"
-            subtitle="Allowed · Blocked · Held breakdown by blast-radius tier"
+          {/* Top Red Border Line */}
+          <div
+            className="w-full h-[3px]"
+            style={{
+              background: C_RED,
+              boxShadow: `0 0 16px ${C_RED}, 0 0 32px ${C_RED}`,
+            }}
           />
-          <div className="flex-1" style={{ minHeight: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={BLAST_DATA}
-                margin={{ top: 6, right: 8, left: -20, bottom: 0 }}
-                barCategoryGap="35%"
+
+          <div className="p-5 md:p-6 space-y-4 flex-1">
+            {/* Widget Title Bar */}
+            <div className="flex items-center justify-between pb-3 border-b border-[rgba(240,22,22,0.2)]">
+              <div className="flex items-center gap-2">
+                <ShieldAlert size={16} style={{ color: C_RED }} />
+                <span className="text-xs font-bold tracking-widest uppercase text-white">
+                  Intercept Core
+                </span>
+              </div>
+
+              {/* Tag: Risk: Tier 3 - Impact */}
+              <span
+                className="px-2.5 py-0.5 rounded text-[9px] font-bold tracking-widest uppercase text-white flex items-center gap-1"
+                style={{
+                  background: C_RED,
+                  boxShadow: `0 0 10px ${C_RED}`,
+                }}
               >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(0,245,255,0.05)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: 'var(--text-dim)', fontSize: 9, fontFamily: 'monospace' }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  tick={{ fill: 'var(--text-dim)', fontSize: 9, fontFamily: 'monospace' }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip content={<BlastTooltip />} cursor={{ fill: 'rgba(0,245,255,0.04)' }} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {BLAST_DATA.map((entry) => (
-                    <Cell
-                      key={entry.name}
-                      fill={entry.color}
-                      style={{
-                        filter: entry.color === C_BLOCKED
-                          ? `drop-shadow(0 0 6px ${C_BLOCKED})`
-                          : `drop-shadow(0 0 3px ${entry.color}60)`,
-                      }}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                <AlertOctagon size={10} />
+                <span>Risk: Tier 3 - Impact</span>
+              </span>
+            </div>
+
+            {/* Simulated Blocked Action Header Info */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#64748B]">INITIATING AGENT:</span>
+                <span className="text-[#00F5FF] font-bold tracking-wide">
+                  agent_sql_infiltrator_07
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#64748B]">TARGET DATABASE:</span>
+                <span className="text-white">postgresql://prod-db/users</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#64748B]">GATEWAY INTERCEPT:</span>
+                <span
+                  className="font-bold px-1.5 py-0.2 rounded text-[10px]"
+                  style={{
+                    background: 'rgba(240,22,22,0.15)',
+                    color: C_RED,
+                    border: '1px solid rgba(240,22,22,0.3)',
+                  }}
+                >
+                  BLOCKED (403 FORBIDDEN)
+                </span>
+              </div>
+            </div>
+
+            {/* Code Block / SQL Payload Preview */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] text-[#64748B]">
+                <span className="flex items-center gap-1">
+                  <Terminal size={11} />
+                  <span>INTERCEPTED PAYLOAD</span>
+                </span>
+                <span className="text-[9px] text-[#F01616]">MUTATION_DISALLOWED</span>
+              </div>
+
+              <div
+                className="p-3.5 rounded-lg border font-mono text-xs overflow-x-auto relative"
+                style={{
+                  background: '#070B12',
+                  borderColor: 'rgba(240, 22, 22, 0.3)',
+                  boxShadow: 'inset 0 0 12px rgba(240, 22, 22, 0.08)',
+                }}
+              >
+                <div className="text-[#64748B] text-[10px] mb-1">
+                  // Unsanitized destructive DDL operation flagged:
+                </div>
+                <code className="text-white font-bold block">
+                  <span style={{ color: C_RED }}>DROP</span>{' '}
+                  <span style={{ color: C_CYAN }}>TABLE</span> users;
+                </code>
+                <div className="text-[10px] text-[#64748B] mt-2 pt-2 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between">
+                  <span>Blast Radius: 100/100</span>
+                  <span className="text-rose-400">Policy: StrictDatabaseProtection</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Threat Description */}
+            <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+              Autonomous agent attempted destructive schema mutation without quorum authorization. The declarative policy engine halted execution and cryptographically committed the refusal to the audit ledger.
+            </p>
+          </div>
+
+          {/* Bottom Action Buttons */}
+          <div
+            className="p-4 bg-[rgba(11,15,25,0.7)] border-t border-[rgba(0,245,255,0.08)] grid grid-cols-2 gap-3"
+          >
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                setInterceptStatus('DENIED_CONFIRMED');
+                triggerFeedback('Action dropped. Incident logged to Security Operations Center.', 'danger');
+              }}
+              className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              style={{
+                background: C_RED,
+                boxShadow: `0 0 14px ${C_RED}`,
+              }}
+            >
+              <ShieldAlert size={13} />
+              <span>Deny Action</span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                setInterceptStatus('AUTHORIZE_REQUESTED');
+                triggerFeedback('Separation of Duties violation: Self-authorization blocked. Escalated to dual-control quorum.', 'danger');
+              }}
+              className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-300 border border-[rgba(255,255,255,0.15)] bg-transparent hover:bg-white/5 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <ShieldCheck size={13} />
+              <span>Authorize Payload</span>
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── 4. Bottom Metrics Grid (4 columns) ───────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1: Active Agents (Cyan border) */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className="glass-panel p-5 rounded-xl border relative overflow-hidden flex flex-col justify-between"
+          style={{
+            borderColor: 'rgba(0, 245, 255, 0.4)',
+            boxShadow: '0 0 20px rgba(0, 245, 255, 0.1)',
+            background: 'var(--bg-glass)',
+          }}
+        >
+          <div
+            className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
+            style={{ background: 'rgba(0, 245, 255, 0.15)' }}
+          />
+
+          <div className="flex items-center justify-between text-[#64748B] text-[10px] uppercase tracking-widest font-semibold mb-2">
+            <span>Active Agents</span>
+            <div className="p-1.5 rounded-md bg-[rgba(0,245,255,0.1)] text-[#00F5FF]">
+              <Users size={14} />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl font-extrabold text-white tracking-tight">
+              18,429
+            </div>
+            <div className="text-[10px] text-[#00F5FF] flex items-center gap-1">
+              <span>●</span>
+              <span>100% Identity Certified</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Metric 2: Human Pending (Amber border) */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.18 }}
+          className="glass-panel p-5 rounded-xl border relative overflow-hidden flex flex-col justify-between"
+          style={{
+            borderColor: 'rgba(255, 184, 0, 0.4)',
+            boxShadow: '0 0 20px rgba(255, 184, 0, 0.1)',
+            background: 'var(--bg-glass)',
+          }}
+        >
+          <div
+            className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
+            style={{ background: 'rgba(255, 184, 0, 0.15)' }}
+          />
+
+          <div className="flex items-center justify-between text-[#64748B] text-[10px] uppercase tracking-widest font-semibold mb-2">
+            <span>Human Pending</span>
+            <div className="p-1.5 rounded-md bg-[rgba(255,184,0,0.1)] text-[#FFB800]">
+              <Activity size={14} />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl font-extrabold text-[#FFB800] tracking-tight">
+              23
+            </div>
+            <div className="text-[10px] text-[#94A3B8] flex items-center gap-1">
+              <span>Awaiting dual-control quorum</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Metric 3: Anomalies Deflected (Red border) */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.26 }}
+          className="glass-panel p-5 rounded-xl border relative overflow-hidden flex flex-col justify-between"
+          style={{
+            borderColor: 'rgba(240, 22, 22, 0.5)',
+            boxShadow: '0 0 24px rgba(240, 22, 22, 0.18)',
+            background: 'var(--bg-glass)',
+          }}
+        >
+          <div
+            className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
+            style={{ background: 'rgba(240, 22, 22, 0.2)' }}
+          />
+
+          <div className="flex items-center justify-between text-[#64748B] text-[10px] uppercase tracking-widest font-semibold mb-2">
+            <span>Anomalies Deflected</span>
+            <div
+              className="p-1.5 rounded-md text-white"
+              style={{ background: C_RED, boxShadow: `0 0 10px ${C_RED}` }}
+            >
+              <ShieldAlert size={14} />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div
+              className="text-3xl font-extrabold tracking-tight"
+              style={{
+                color: C_RED,
+                textShadow: `0 0 12px ${C_RED}`,
+              }}
+            >
+              312
+            </div>
+            <div className="text-[10px] text-rose-400 flex items-center gap-1">
+              <span>Zero-day and SQL vectors neutralized</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Metric 4: Cryptographic Chain (Emerald border) */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.34 }}
+          className="glass-panel p-5 rounded-xl border relative overflow-hidden flex flex-col justify-between"
+          style={{
+            borderColor: 'rgba(0, 230, 118, 0.4)',
+            boxShadow: '0 0 20px rgba(0, 230, 118, 0.1)',
+            background: 'var(--bg-glass)',
+          }}
+        >
+          <div
+            className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl pointer-events-none"
+            style={{ background: 'rgba(0, 230, 118, 0.15)' }}
+          />
+
+          <div className="flex items-center justify-between text-[#64748B] text-[10px] uppercase tracking-widest font-semibold mb-2">
+            <span>Cryptographic Chain</span>
+            <div className="p-1.5 rounded-md bg-[rgba(0,230,118,0.1)] text-[#00E676]">
+              <Lock size={14} />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl font-extrabold text-[#00E676] tracking-tight">
+              100%
+            </div>
+            <div className="text-[10px] text-emerald-400 flex items-center gap-1">
+              <span>SHA-256 forward-linked unbroken</span>
+            </div>
           </div>
         </motion.div>
       </div>
