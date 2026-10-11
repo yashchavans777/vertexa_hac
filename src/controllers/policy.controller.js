@@ -47,14 +47,24 @@ const createPolicy = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Fetch all active policies currently enforced by the policy engine
+ * @desc    Fetch all policies from MongoDB (both active and inactive) so disabled policies still render
  * @route   GET /api/v1/policies
- * @access  Internal Security Gateway / Auditor
+ * @access  Internal Security Gateway / Auditor / Dashboard
  */
-const getActivePolicies = asyncHandler(async (req, res) => {
-  const policies = await Policy.find({ isActive: true })
-    .sort({ priority: -1, createdAt: 1 })
+const getPolicies = asyncHandler(async (req, res) => {
+  const filter = {};
+  // Only filter by isActive if explicitly requested via query parameter (?active=true or ?isActive=false)
+  if (req.query.active !== undefined) {
+    filter.isActive = req.query.active === 'true';
+  } else if (req.query.isActive !== undefined) {
+    filter.isActive = req.query.isActive === 'true';
+  }
+
+  const policies = await Policy.find(filter)
+    .sort({ priority: -1, createdAt: -1 })
     .lean();
+
+  const totalActive = policies.filter((p) => p.isActive).length;
 
   return res
     .status(200)
@@ -62,21 +72,25 @@ const getActivePolicies = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         {
-          totalActive: policies.length,
+          total: policies.length,
+          totalActive,
+          totalInactive: policies.length - totalActive,
           policies
         },
-        'Active security policies retrieved successfully.'
+        'Security policies retrieved successfully.'
       )
     );
 });
 
 /**
- * @desc    Toggle policy active state (enable/disable for incident response)
+ * @desc    Toggle or update policy active state (enable/disable for incident response)
  * @route   PATCH /api/v1/policies/:id/toggle
+ * @route   PATCH /api/v1/policies/:id
  * @access  Internal Admin / SOC Responder
  */
 const togglePolicyState = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { isActive } = req.body || {};
 
   if (!id) {
     throw new ApiError(400, 'Policy ID is required.');
@@ -87,8 +101,13 @@ const togglePolicyState = asyncHandler(async (req, res) => {
     throw new ApiError(404, `Policy with ID "${id}" was not found.`);
   }
 
-  // Toggle state
-  policy.isActive = !policy.isActive;
+  // If isActive is explicitly specified in req.body, apply it; otherwise toggle current boolean
+  if (isActive !== undefined) {
+    policy.isActive = Boolean(isActive);
+  } else {
+    policy.isActive = !policy.isActive;
+  }
+
   await policy.save();
 
   const stateStr = policy.isActive ? 'ACTIVATED' : 'DEACTIVATED';
@@ -106,6 +125,7 @@ const togglePolicyState = asyncHandler(async (req, res) => {
 
 module.exports = {
   createPolicy,
-  getActivePolicies,
+  getPolicies,
+  getActivePolicies: getPolicies, // Alias for backwards compatibility
   togglePolicyState
 };

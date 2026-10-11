@@ -6,7 +6,12 @@ const TRUSTED_AGENTS = new Set([
   'agent_support_v2',
   'agent_devops_v1',
   'agent_auditor_v1',
-  'agent_security_guard'
+  'agent_security_guard',
+  'autonomous-agent-07',
+  'agent_worker_v1',
+  'TreasuryOperator-09',
+  'RefundProcessor Agent',
+  'InfraScale Orchestrator'
 ]);
 
 // Deterministic Tool Capability Classifications

@@ -14,6 +14,7 @@ import {
   Layers,
   Terminal,
 } from 'lucide-react';
+import SimulateActionFab from './SimulateActionFab';
 
 /* ─── Strict Color Tokens ─────────────────────────────────────── */
 const C_BLOCK_DANGER = '#F01616'; // Strict: rgb(240, 22, 22)
@@ -127,17 +128,23 @@ export default function PolicyManager() {
 
   // ── Toggle Policy State ─────────────────────────────────────────
   const togglePolicy = async (policyId) => {
-    try {
-      // Optimistic UI update
-      setPolicies((prev) =>
-        prev.map((p) => (p._id === policyId ? { ...p, isActive: !p.isActive } : p))
-      );
+    const current = policies.find((p) => p._id === policyId);
+    if (!current) return;
+    const nextState = !current.isActive;
 
-      await api.patch(`${API_BASE}/${policyId}/toggle`);
-      showFeedback('Policy state updated on gateway.', 'success');
-    } catch {
-      // If backend offline, keep optimistic update for demo purposes
-      showFeedback('State toggled locally (Gateway offline).', 'warning');
+    // Optimistic UI update: toggles active state while keeping the policy card in the list
+    setPolicies((prev) =>
+      prev.map((p) => (p._id === policyId ? { ...p, isActive: nextState } : p))
+    );
+
+    try {
+      // Sends PATCH request to update active state (NEVER a DELETE request)
+      await api.patch(`${API_BASE}/${policyId}/toggle`, { isActive: nextState });
+      showFeedback(`Policy ${nextState ? 'ACTIVATED' : 'DEACTIVATED'} on gateway.`, 'success');
+    } catch (err) {
+      console.warn('Backend toggle status:', err);
+      // Keep optimistic update for local hackathon demo responsiveness
+      showFeedback(`Policy state updated locally.`, 'warning');
     }
   };
 
@@ -599,6 +606,9 @@ export default function PolicyManager() {
           );
         })}
       </div>
+
+      {/* ── Simulate AI Action Floating Action Button (FAB) ───── */}
+      <SimulateActionFab policies={policies} />
     </div>
   );
 }

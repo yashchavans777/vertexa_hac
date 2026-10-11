@@ -92,12 +92,15 @@ const evaluateAction = asyncHandler(async (req, res) => {
   // STEP 2: Declarative Policy Evaluation
   // Evaluates zero-trust agent identity, blast radius, payload constraints, and AI risk.
   // =========================================================================
-  const policyOutcome = evaluatePayloadAgainstPolicies({
-    agentId,
-    toolName,
-    payload,
+  const policyOutcome = await evaluatePayloadAgainstPolicies(
+    {
+      agentId,
+      toolName,
+      arguments: payload?.arguments || payload,
+      payload
+    },
     riskAnalysis
-  });
+  );
 
   const { effect, decisionReason, decisionPath } = policyOutcome;
 
